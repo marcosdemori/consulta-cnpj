@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MegaOnline - Consulta de CNPJ</title>
+  <title>Consulta de CNPJ</title>
   <style>
     * {
       box-sizing: border-box;
@@ -15,12 +15,13 @@
       --bg: #f1f5f9;
       --card: #ffffff;
       --dark: #0f172a;
-      --dark-2: #1e293b;
       --text: #0f172a;
       --muted: #64748b;
       --border: #e2e8f0;
       --primary: #2563eb;
       --primary-hover: #1d4ed8;
+      --secondary: #0f172a;
+      --secondary-hover: #1e293b;
       --success-bg: #ecfdf5;
       --success-text: #047857;
       --warning-bg: #fffbeb;
@@ -148,21 +149,40 @@
       box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.15);
     }
 
+    .button-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
     button {
       height: 56px;
       border: 0;
       border-radius: 18px;
       padding: 0 24px;
-      background: var(--primary);
-      color: white;
       font-size: 15px;
       font-weight: 700;
       cursor: pointer;
       transition: 0.2s;
     }
 
-    button:hover {
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
       background: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.14);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.14);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.2);
     }
 
     button:disabled {
@@ -202,6 +222,40 @@
       color: var(--muted);
       max-width: 720px;
       margin: 0 auto;
+    }
+
+    .history-wrap {
+      margin-top: 18px;
+    }
+
+    .history-title {
+      color: #cbd5e1;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .history-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .history-item {
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.08);
+      color: white;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .history-item:hover {
+      background: rgba(255,255,255,0.16);
     }
 
     .layout {
@@ -343,11 +397,6 @@
       border: 1px solid #e5e7eb;
     }
 
-    .loading {
-      color: var(--muted);
-      font-weight: 700;
-    }
-
     .hidden {
       display: none;
     }
@@ -382,7 +431,8 @@
         grid-template-columns: 1fr;
       }
 
-      .search-row {
+      .search-row,
+      .button-group {
         flex-direction: column;
       }
 
@@ -404,6 +454,8 @@
           com visual profissional e pronto para publicar no GitHub Pages.
         </p>
         <div class="badges">
+          <span class="badge">HTML puro</span>
+          <span class="badge">GitHub Pages</span>
           <span class="badge" id="statusBadge">Aguardando consulta</span>
         </div>
       </div>
@@ -411,11 +463,19 @@
       <div class="search-box">
         <label class="label" for="cnpjInput">Digite o CNPJ</label>
         <div class="search-row">
-          <input id="cnpjInput" type="text" placeholder="00.000.000/0000-00" value="08.978.752/0001-33" />
-          <button id="consultarBtn">Consultar</button>
+          <input id="cnpjInput" type="text" placeholder="00.000.000/0000-00" value="89.787.520/0013-3" />
+          <div class="button-group">
+            <button class="btn-primary" id="consultarBtn">Consultar</button>
+            <button class="btn-secondary" id="limparBtn" type="button">Limpar</button>
+          </div>
         </div>
-        <div class="helper">Exemplo: 08.978.752/0001-33</div>
+        <div class="helper">Exemplo: 89.787.520/0013-3</div>
         <div class="error hidden" id="errorBox"></div>
+
+        <div class="history-wrap">
+          <div class="history-title">Consultas recentes</div>
+          <div class="history-list" id="historyList"></div>
+        </div>
       </div>
     </section>
 
@@ -468,7 +528,7 @@
         <div class="card">
           <h2>Resumo executivo</h2>
           <div class="subtext" style="margin-top: 12px; line-height: 1.8;">
-            A tela consulta a API em tempo real e apresenta os dados da empresa de forma organizada, elegante e profissional.
+            A tela consulta a API em tempo real, salva o último CNPJ pesquisado, mantém um histórico recente clicável e apresenta os dados da empresa de forma organizada e profissional.
           </div>
         </div>
       </div>
@@ -476,14 +536,8 @@
   </div>
 
   <script>
-    const cnpjInput = document.getElementById('cnpjInput');
-    const consultarBtn = document.getElementById('consultarBtn');
-    const errorBox = document.getElementById('errorBox');
-    const emptyState = document.getElementById('emptyState');
-    const resultSection = document.getElementById('resultSection');
-    const statusBadge = document.getElementById('statusBadge');
-
     const LAST_CNPJ_KEY = 'ultimo_cnpj_consultado';
+    const HISTORY_KEY = 'historico_cnpj';
 
     const IE_LENGTH_BY_UF = {
       AC: 13,
@@ -514,6 +568,15 @@
       SE: 9,
       TO: 11
     };
+
+    const cnpjInput = document.getElementById('cnpjInput');
+    const consultarBtn = document.getElementById('consultarBtn');
+    const limparBtn = document.getElementById('limparBtn');
+    const errorBox = document.getElementById('errorBox');
+    const emptyState = document.getElementById('emptyState');
+    const resultSection = document.getElementById('resultSection');
+    const statusBadge = document.getElementById('statusBadge');
+    const historyList = document.getElementById('historyList');
 
     const empresaTitulo = document.getElementById('empresaTitulo');
     const empresaSubtitulo = document.getElementById('empresaSubtitulo');
@@ -621,13 +684,65 @@
 
     function loadLastCnpj() {
       try {
-        const saved = localStorage.getItem(LAST_CNPJ_KEY);
-        if (saved && onlyDigits(saved).length <= 14) {
-          cnpjInput.value = formatCnpjInput(saved);
-        }
+        return localStorage.getItem(LAST_CNPJ_KEY) || '';
       } catch (error) {
         console.warn('Nao foi possivel carregar o ultimo CNPJ pesquisado.', error);
+        return '';
       }
+    }
+
+    function saveHistory(cnpj) {
+      try {
+        const clean = onlyDigits(cnpj);
+        let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+        history = [clean, ...history.filter(item => item !== clean)].slice(0, 5);
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+      } catch (error) {
+        console.warn('Nao foi possivel salvar o historico.', error);
+      }
+    }
+
+    function getHistory() {
+      try {
+        return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      } catch (error) {
+        console.warn('Nao foi possivel carregar o historico.', error);
+        return [];
+      }
+    }
+
+    function clearStoredData() {
+      try {
+        localStorage.removeItem(LAST_CNPJ_KEY);
+      } catch (error) {
+        console.warn('Nao foi possivel limpar o ultimo CNPJ.', error);
+      }
+    }
+
+    function renderHistory() {
+      const history = getHistory();
+      historyList.innerHTML = '';
+
+      if (!history.length) {
+        const empty = document.createElement('div');
+        empty.className = 'subtext';
+        empty.style.color = '#cbd5e1';
+        empty.textContent = 'Nenhuma consulta recente.';
+        historyList.appendChild(empty);
+        return;
+      }
+
+      history.forEach((item) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'history-item';
+        button.textContent = formatCnpj(item);
+        button.addEventListener('click', () => {
+          cnpjInput.value = formatCnpjInput(item);
+          consultarCnpj();
+        });
+        historyList.appendChild(button);
+      });
     }
 
     function renderData(data) {
@@ -738,6 +853,8 @@
         const data = await response.json();
         renderData(data);
         saveLastCnpj(cnpj);
+        saveHistory(cnpj);
+        renderHistory();
       } catch (error) {
         resultSection.classList.add('hidden');
         emptyState.classList.remove('hidden');
@@ -747,6 +864,17 @@
       } finally {
         setLoading(false);
       }
+    }
+
+    function limparConsulta() {
+      cnpjInput.value = '';
+      hideError();
+      clearStoredData();
+      resultSection.classList.add('hidden');
+      emptyState.classList.remove('hidden');
+      statusBadge.textContent = 'Aguardando consulta';
+      statusBadge.className = 'badge';
+      cnpjInput.focus();
     }
 
     cnpjInput.addEventListener('input', function () {
@@ -760,8 +888,17 @@
     });
 
     consultarBtn.addEventListener('click', consultarCnpj);
+    limparBtn.addEventListener('click', limparConsulta);
 
-    loadLastCnpj();
+    window.addEventListener('load', () => {
+      renderHistory();
+
+      const lastCnpj = loadLastCnpj();
+      if (lastCnpj && onlyDigits(lastCnpj).length === 14) {
+        cnpjInput.value = formatCnpjInput(lastCnpj);
+        consultarCnpj();
+      }
+    });
   </script>
 </body>
 </html>
