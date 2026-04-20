@@ -14,14 +14,11 @@
     :root {
       --bg: #f1f5f9;
       --card: #ffffff;
-      --dark: #0f172a;
       --text: #0f172a;
       --muted: #64748b;
       --border: #e2e8f0;
       --primary: #2563eb;
       --primary-hover: #1d4ed8;
-      --secondary: #0f172a;
-      --secondary-hover: #1e293b;
       --success-bg: #ecfdf5;
       --success-text: #047857;
       --warning-bg: #fffbeb;
@@ -156,7 +153,7 @@
     }
 
     button {
-      height: 56px;
+      min-height: 44px;
       border: 0;
       border-radius: 18px;
       padding: 0 24px;
@@ -201,6 +198,46 @@
       color: #fecdd3;
       font-size: 14px;
       font-weight: 700;
+    }
+
+    .toast {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .toast.success {
+      background: rgba(16, 185, 129, 0.18);
+      color: #d1fae5;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .toast.warning {
+      background: rgba(245, 158, 11, 0.18);
+      color: #fde68a;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .report-header {
+      display: none;
+      margin-bottom: 18px;
+      padding-bottom: 18px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .report-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .report-meta {
+      margin-top: 8px;
+      color: #475569;
+      font-size: 14px;
+      line-height: 1.7;
     }
 
     .empty-state {
@@ -252,6 +289,7 @@
       font-size: 13px;
       font-weight: 700;
       cursor: pointer;
+      min-height: auto;
     }
 
     .history-item:hover {
@@ -333,6 +371,7 @@
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
+      align-items: center;
     }
 
     .pill {
@@ -346,6 +385,7 @@
       border: 1px solid var(--border);
       background: #f8fafc;
       color: #334155;
+      min-height: auto;
     }
 
     .pill.green {
@@ -358,6 +398,10 @@
       background: var(--warning-bg);
       border-color: #fcd34d;
       color: var(--warning-text);
+    }
+
+    .pill-action {
+      cursor: pointer;
     }
 
     .partner {
@@ -401,6 +445,67 @@
       display: none;
     }
 
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+
+      .hero,
+      .history-wrap,
+      #copyBtn,
+      #pdfBtn,
+      #shareBtn,
+      #limparBtn,
+      #consultarBtn,
+      #toastBox {
+        display: none !important;
+      }
+
+      .container {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      .report-header {
+        display: block;
+      }
+
+      .layout {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        margin-top: 0;
+      }
+
+      .stack {
+        gap: 16px;
+      }
+
+      .card,
+      .empty-state {
+        box-shadow: none;
+        border: 1px solid #d1d5db;
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+
+      .card-header {
+        margin-bottom: 14px;
+      }
+    }
+
     @media (max-width: 980px) {
       .hero,
       .layout {
@@ -437,7 +542,7 @@
       }
 
       input,
-      button {
+      .button-group button {
         width: 100%;
       }
     }
@@ -454,8 +559,6 @@
           com visual profissional e pronto para publicar no GitHub Pages.
         </p>
         <div class="badges">
-          <span class="badge">HTML puro</span>
-          <span class="badge">GitHub Pages</span>
           <span class="badge" id="statusBadge">Aguardando consulta</span>
         </div>
       </div>
@@ -463,14 +566,15 @@
       <div class="search-box">
         <label class="label" for="cnpjInput">Digite o CNPJ</label>
         <div class="search-row">
-          <input id="cnpjInput" type="text" placeholder="00.000.000/0000-00" value="89.787.520/0013-3" />
+          <input id="cnpjInput" type="text" placeholder="00.000.000/0000-00" value="08.978.752/0001-33" />
           <div class="button-group">
-            <button class="btn-primary" id="consultarBtn">Consultar</button>
+            <button class="btn-primary" id="consultarBtn" type="button">Consultar</button>
             <button class="btn-secondary" id="limparBtn" type="button">Limpar</button>
           </div>
         </div>
-        <div class="helper">Exemplo: 89.787.520/0013-3</div>
+        <div class="helper">Exemplo: 08.978.752/0001-33</div>
         <div class="error hidden" id="errorBox"></div>
+        <div class="toast hidden" id="toastBox"></div>
 
         <div class="history-wrap">
           <div class="history-title">Consultas recentes</div>
@@ -485,6 +589,10 @@
     </section>
 
     <section class="layout hidden" id="resultSection">
+      <div class="report-header" id="reportHeader">
+        <div class="report-title">Relatório de Consulta de CNPJ</div>
+        <div class="report-meta" id="reportMeta">Gerado em —</div>
+      </div>
       <div class="stack">
         <div class="card">
           <div class="card-header">
@@ -493,6 +601,9 @@
               <div class="subtext" id="empresaSubtitulo">—</div>
             </div>
             <div class="pill-row">
+              <button class="pill pill-action" id="copyBtn" type="button">Copiar CNPJ</button>
+              <button class="pill pill-action" id="shareBtn" type="button">Copiar link</button>
+              <button class="pill pill-action" id="pdfBtn" type="button">Exportar PDF</button>
               <span class="pill green" id="pillSituacao">Situação: —</span>
               <span class="pill" id="pillCnpj">CNPJ: —</span>
             </div>
@@ -535,9 +646,14 @@
     </section>
   </div>
 
+  <textarea id="copyFallbackInput" class="sr-only" aria-hidden="true"></textarea>
+
   <script>
     const LAST_CNPJ_KEY = 'ultimo_cnpj_consultado';
     const HISTORY_KEY = 'historico_cnpj';
+    const RATE_LIMIT_WINDOW_MS = 15000;
+    const SAME_CNPJ_COOLDOWN_MS = 20000;
+    const MAX_REQUESTS_PER_WINDOW = 5;
 
     const IE_LENGTH_BY_UF = {
       AC: 13,
@@ -577,6 +693,8 @@
     const resultSection = document.getElementById('resultSection');
     const statusBadge = document.getElementById('statusBadge');
     const historyList = document.getElementById('historyList');
+    const toastBox = document.getElementById('toastBox');
+    const fallbackInput = document.getElementById('copyFallbackInput');
 
     const empresaTitulo = document.getElementById('empresaTitulo');
     const empresaSubtitulo = document.getElementById('empresaSubtitulo');
@@ -587,6 +705,18 @@
     const sociosList = document.getElementById('sociosList');
     const tributarioGrid = document.getElementById('tributarioGrid');
     const atividadesList = document.getElementById('atividadesList');
+    const copyBtn = document.getElementById('copyBtn');
+    const pdfBtn = document.getElementById('pdfBtn');
+    const shareBtn = document.getElementById('shareBtn');
+    const reportMeta = document.getElementById('reportMeta');
+
+    let currentRenderedCnpj = '';
+    let currentCompanyName = '';
+    let requestHistory = [];
+    let lastRequestedCnpj = '';
+    let lastRequestedAt = 0;
+    let countdownTimer = null;
+    let toastTimer = null;
 
     function onlyDigits(value) {
       return String(value || '').replace(/\D/g, '');
@@ -647,6 +777,21 @@
       return digits.padStart(expectedLength, '0');
     }
 
+    function formatDateTimeNow() {
+      return new Date().toLocaleString('pt-BR');
+    }
+
+    function updateShareUrl(cnpj) {
+      const url = new URL(window.location.href);
+      if (cnpj && cnpj.length === 14) {
+        url.searchParams.set('cnpj', cnpj);
+      } else {
+        url.searchParams.delete('cnpj');
+      }
+      window.history.replaceState({}, '', url.toString());
+      return url.toString();
+    }
+
     function createInfoItem(label, value) {
       const div = document.createElement('div');
       div.className = 'info';
@@ -667,11 +812,108 @@
       errorBox.classList.add('hidden');
     }
 
+    function showToast(message, tone = 'success') {
+      toastBox.textContent = message;
+      toastBox.className = `toast ${tone}`;
+      toastBox.classList.remove('hidden');
+
+      if (toastTimer) {
+        clearTimeout(toastTimer);
+      }
+
+      toastTimer = setTimeout(() => {
+        toastBox.classList.add('hidden');
+      }, 2600);
+    }
+
     function setLoading(isLoading) {
       consultarBtn.disabled = isLoading;
       consultarBtn.textContent = isLoading ? 'Consultando...' : 'Consultar';
       statusBadge.textContent = isLoading ? 'Consultando agora' : 'Aguardando consulta';
       statusBadge.className = isLoading ? 'badge warning' : 'badge';
+    }
+
+    function stopCountdown() {
+      if (countdownTimer) {
+        clearInterval(countdownTimer);
+        countdownTimer = null;
+      }
+      if (!consultarBtn.disabled) {
+        consultarBtn.textContent = 'Consultar';
+      }
+    }
+
+    function startCountdown(waitMs, message) {
+      stopCountdown();
+      consultarBtn.disabled = true;
+
+      const updateCountdown = () => {
+        const seconds = getRemainingCooldown(waitMs);
+        consultarBtn.textContent = `Aguarde ${seconds}s`;
+        if (message) {
+          showError(`${message} Aguarde ${seconds}s.`);
+        }
+      };
+
+      updateCountdown();
+      const startedAt = Date.now();
+
+      countdownTimer = setInterval(() => {
+        const elapsed = Date.now() - startedAt;
+        const remaining = waitMs - elapsed;
+
+        if (remaining <= 0) {
+          stopCountdown();
+          consultarBtn.disabled = false;
+          consultarBtn.textContent = 'Consultar';
+          hideError();
+          return;
+        }
+
+        const seconds = getRemainingCooldown(remaining);
+        consultarBtn.textContent = `Aguarde ${seconds}s`;
+        if (message) {
+          showError(`${message} Aguarde ${seconds}s.`);
+        }
+      }, 250);
+    }
+
+    function getRemainingCooldown(ms) {
+      return Math.max(1, Math.ceil(ms / 1000));
+    }
+
+    function canMakeRequest(cnpj) {
+      const now = Date.now();
+      requestHistory = requestHistory.filter((time) => now - time < RATE_LIMIT_WINDOW_MS);
+
+      if (requestHistory.length >= MAX_REQUESTS_PER_WINDOW) {
+        const waitMs = RATE_LIMIT_WINDOW_MS - (now - requestHistory[0]);
+        return {
+          allowed: false,
+          reason: 'window_limit',
+          waitMs,
+          message: 'Muitas consultas em pouco tempo.'
+        };
+      }
+
+      if (lastRequestedCnpj === cnpj && now - lastRequestedAt < SAME_CNPJ_COOLDOWN_MS) {
+        const waitMs = SAME_CNPJ_COOLDOWN_MS - (now - lastRequestedAt);
+        return {
+          allowed: false,
+          reason: 'same_cnpj_cooldown',
+          waitMs,
+          message: 'Este CNPJ foi consultado há pouco tempo.'
+        };
+      }
+
+      return { allowed: true, reason: '', waitMs: 0, message: '' };
+    }
+
+    function registerRequest(cnpj) {
+      const now = Date.now();
+      requestHistory.push(now);
+      lastRequestedCnpj = cnpj;
+      lastRequestedAt = now;
     }
 
     function saveLastCnpj(cnpj) {
@@ -695,7 +937,7 @@
       try {
         const clean = onlyDigits(cnpj);
         let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-        history = [clean, ...history.filter(item => item !== clean)].slice(0, 5);
+        history = [clean, ...history.filter((item) => item !== clean)].slice(0, 5);
         localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
       } catch (error) {
         console.warn('Nao foi possivel salvar o historico.', error);
@@ -759,10 +1001,14 @@
         ? formatInscricaoEstadual(est.inscricoes_estaduais[0].inscricao_estadual, uf)
         : '—';
 
+      currentRenderedCnpj = onlyDigits(est.cnpj || cnpjInput.value);
+      currentCompanyName = data.razao_social || '';
       empresaTitulo.textContent = data.razao_social || '—';
       empresaSubtitulo.textContent = est.nome_fantasia || 'Sem nome fantasia';
       pillSituacao.textContent = `Situação: ${est.situacao_cadastral || '—'}`;
       pillCnpj.textContent = `CNPJ: ${formatCnpj(est.cnpj)}`;
+      reportMeta.textContent = `Empresa: ${data.razao_social || '—'} | CNPJ: ${formatCnpj(est.cnpj)} | Gerado em: ${formatDateTimeNow()}`;
+      updateShareUrl(currentRenderedCnpj);
 
       dadosCadastrais.innerHTML = '';
       dadosCadastrais.appendChild(createInfoItem('Razão social', data.razao_social));
@@ -840,13 +1086,27 @@
         return;
       }
 
+      const rateLimitCheck = canMakeRequest(cnpj);
+      if (!rateLimitCheck.allowed) {
+        startCountdown(rateLimitCheck.waitMs, rateLimitCheck.message);
+        showToast(`${rateLimitCheck.message} Aguarde ${getRemainingCooldown(rateLimitCheck.waitMs)}s.`, 'warning');
+        return;
+      }
+
+      stopCountdown();
       hideError();
       setLoading(true);
+      registerRequest(cnpj);
 
       try {
         const response = await fetch(`https://publica.cnpj.ws/cnpj/${cnpj}`);
 
         if (!response.ok) {
+          if (response.status === 429) {
+            startCountdown(15000, 'Limite de consultas atingido na API.');
+            throw new Error('Limite de consultas atingido na API. Aguarde alguns instantes antes de tentar novamente.');
+          }
+
           throw new Error('Não foi possível consultar este CNPJ.');
         }
 
@@ -859,6 +1119,7 @@
         resultSection.classList.add('hidden');
         emptyState.classList.remove('hidden');
         showError(error.message || 'Erro ao consultar o CNPJ.');
+        showToast(error.message || 'Erro ao consultar o CNPJ.', 'warning');
         statusBadge.textContent = 'Falha na consulta';
         statusBadge.className = 'badge warning';
       } finally {
@@ -867,7 +1128,10 @@
     }
 
     function limparConsulta() {
+      stopCountdown();
+      updateShareUrl('');
       cnpjInput.value = '';
+      currentRenderedCnpj = '';
       hideError();
       clearStoredData();
       resultSection.classList.add('hidden');
@@ -875,6 +1139,64 @@
       statusBadge.textContent = 'Aguardando consulta';
       statusBadge.className = 'badge';
       cnpjInput.focus();
+    }
+
+    function copyUsingExecCommand(text) {
+      fallbackInput.value = text;
+      fallbackInput.classList.remove('sr-only');
+      fallbackInput.select();
+      fallbackInput.setSelectionRange(0, fallbackInput.value.length);
+
+      let copied = false;
+      try {
+        copied = document.execCommand('copy');
+      } catch (error) {
+        copied = false;
+      }
+
+      fallbackInput.blur();
+      fallbackInput.classList.add('sr-only');
+      window.getSelection()?.removeAllRanges();
+      return copied;
+    }
+
+    async function copyText(text) {
+      if (!text) return false;
+
+      if (window.isSecureContext && navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+        try {
+          await navigator.clipboard.writeText(text);
+          return true;
+        } catch (error) {
+          console.warn('Clipboard API indisponivel, tentando fallback.', error);
+        }
+      }
+
+      return copyUsingExecCommand(text);
+    }
+
+    function runLocalTests() {
+      console.assert(formatCnpj('11222333000181') === '11.222.333/0001-81', 'Teste formatCnpj falhou');
+      console.assert(formatCnpjInput('11222333000181') === '11.222.333/0001-81', 'Teste formatCnpjInput falhou');
+      console.assert(formatCep('79005300') === '79005-300', 'Teste formatCep falhou');
+      console.assert(formatInscricaoEstadual('283399988', 'MS') === '283399988', 'Teste IE MS falhou');
+      console.assert(formatInscricaoEstadual('12345', 'SP') === '000000012345', 'Teste IE SP com zeros falhou');
+      console.assert(onlyDigits('89.787.520/0013-3') === '8978752000133', 'Teste onlyDigits falhou');
+      requestHistory = [Date.now() - 1000, Date.now() - 2000, Date.now() - 3000, Date.now() - 4000, Date.now() - 5000];
+      const rateLimitResult = canMakeRequest('11222333000181');
+      console.assert(rateLimitResult.allowed === false, 'Teste rate limit falhou');
+      console.assert(rateLimitResult.waitMs > 0, 'Teste waitMs rate limit falhou');
+      requestHistory = [];
+      lastRequestedCnpj = '11222333000181';
+      lastRequestedAt = Date.now();
+      const cooldownResult = canMakeRequest('11222333000181');
+      console.assert(cooldownResult.allowed === false, 'Teste cooldown por CNPJ falhou');
+      console.assert(cooldownResult.waitMs > 0, 'Teste waitMs cooldown falhou');
+      lastRequestedCnpj = '';
+      lastRequestedAt = 0;
+      const testUrl = new URL('https://marcosdemori.github.io/?foo=1');
+      testUrl.searchParams.set('cnpj', '11222333000181');
+      console.assert(testUrl.searchParams.get('cnpj') === '11222333000181', 'Teste link compartilhavel falhou');
     }
 
     cnpjInput.addEventListener('input', function () {
@@ -890,13 +1212,54 @@
     consultarBtn.addEventListener('click', consultarCnpj);
     limparBtn.addEventListener('click', limparConsulta);
 
+    copyBtn.addEventListener('click', async () => {
+      const cnpj = currentRenderedCnpj || onlyDigits(cnpjInput.value);
+      if (cnpj.length !== 14) {
+        showToast('Consulte um CNPJ válido antes de copiar.', 'warning');
+        return;
+      }
+
+      const copied = await copyText(formatCnpj(cnpj));
+      if (copied) {
+        showToast('CNPJ copiado com sucesso.', 'success');
+      } else {
+        showToast('Nao foi possivel copiar automaticamente neste ambiente.', 'warning');
+      }
+    });
+
+    shareBtn.addEventListener('click', async () => {
+      const cnpj = currentRenderedCnpj || onlyDigits(cnpjInput.value);
+      if (cnpj.length !== 14) {
+        showToast('Consulte um CNPJ válido antes de gerar o link.', 'warning');
+        return;
+      }
+
+      const shareUrl = updateShareUrl(cnpj);
+      const copied = await copyText(shareUrl);
+      if (copied) {
+        showToast('Link compartilhável copiado com sucesso.', 'success');
+      } else {
+        showToast('Nao foi possivel copiar o link automaticamente.', 'warning');
+      }
+    });
+
+    pdfBtn.addEventListener('click', () => {
+      window.print();
+    });
+
     window.addEventListener('load', () => {
+      runLocalTests();
       renderHistory();
 
+      const urlCnpj = onlyDigits(new URLSearchParams(window.location.search).get('cnpj') || '');
       const lastCnpj = loadLastCnpj();
-      if (lastCnpj && onlyDigits(lastCnpj).length === 14) {
-        cnpjInput.value = formatCnpjInput(lastCnpj);
+      const initialCnpj = urlCnpj.length === 14 ? urlCnpj : lastCnpj;
+
+      if (initialCnpj && onlyDigits(initialCnpj).length === 14) {
+        cnpjInput.value = formatCnpjInput(initialCnpj);
         consultarCnpj();
+      } else {
+        updateShareUrl('');
       }
     });
   </script>
