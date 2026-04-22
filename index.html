@@ -3,1262 +3,2041 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Consulta de CNPJ</title>
+  <title>MegaOnline - CNPJ Pro - Consulta de CNPJ</title>
+  
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236366f1'><path d='M3 21h18v-2H3v2zm4-4h2v-2H7v2zm0-4h2v-2H7v2zm0-4h2V7H7v2zm4 8h2v-2h-2v2zm0-4h2v-2h-2v2zm0-4h2V7h-2v2zm4 8h2v-2h-2v2zm0-4h2v-2h-2v2zm0-4h2V7h-2v2zM5 5v14h14V5H5z'/></svg>"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  
   <style>
-    * {
+    /* ==========================================
+       RESET BÁSICO
+       ========================================== */
+    *, *::before, *::after {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
 
+    /* ==========================================
+       VARIÁVEIS DE CORES DINÂMICAS
+       ========================================== */
     :root {
-      --bg: #f1f5f9;
-      --card: #ffffff;
-      --text: #0f172a;
-      --muted: #64748b;
+      /* Padrão Dark */
+      --bg: #09090b;
+      --bg-nav: rgba(9, 9, 11, 0.9);
+      --surface: #111115;
+      --surface2: #17171c;
+      --surface3: #1e1e25;
+      --surface4: #25252e;
+      --border: #2a2a35;
+      --border2: #38384a;
+      --border3: #4a4a60;
+      --text: #f4f4f6;
+      --text2: #a1a1b5;
+      --text3: #6b6b80;
+      --text4: #44444f;
+      --accent: #6366f1;
+      --accent-light: #818cf8;
+      --accent-bg: rgba(99, 102, 241, .08);
+      --accent-border: rgba(99, 102, 241, .25);
+      --green: #22c55e;
+      --green-bg: rgba(34, 197, 94, .08);
+      --green-border: rgba(34, 197, 94, .2);
+      --green-text: #4ade80;
+      --amber: #f59e0b;
+      --amber-bg: rgba(245, 158, 11, .08);
+      --amber-border: rgba(245, 158, 11, .2);
+      --amber-text: #fbbf24;
+      --red: #ef4444;
+      --red-bg: rgba(239, 68, 68, .08);
+      --red-border: rgba(239, 68, 68, .2);
+      --red-text: #f87171;
+      --shadow: none;
+      --nav-h: 56px;
+      --r: 10px;
+      --r-lg: 14px;
+      --r-xl: 18px;
+    }
+
+    /* Ajustes para Light Mode (Tema Claro) */
+    body.light-mode {
+      --bg: #f4f7f6;
+      --bg-nav: rgba(255, 255, 255, 0.9);
+      --surface: #ffffff;
+      --surface2: #f9fafb;
+      --surface3: #f3f4f6;
+      --surface4: #e5e7eb;
       --border: #e2e8f0;
-      --primary: #2563eb;
-      --primary-hover: #1d4ed8;
-      --success-bg: #ecfdf5;
-      --success-text: #047857;
-      --warning-bg: #fffbeb;
-      --warning-text: #b45309;
-      --danger-bg: #fff1f2;
-      --danger-text: #be123c;
-      --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
-      --radius: 24px;
+      --border2: #cbd5e1;
+      --border3: #94a3b8;
+      --text: #0f172a;
+      --text2: #334155;
+      --text3: #64748b;
+      --text4: #94a3b8;
+      --accent: #4f46e5;
+      --accent-light: #6366f1;
+      --accent-bg: rgba(79, 70, 229, 0.05);
+      --accent-border: rgba(79, 70, 229, 0.1);
+      --green-text: #16a34a;
+      --red-text: #dc2626;
+      --amber-text: #d97706;
+      --shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.08);
+    }
+
+    /* ==========================================
+       ESTILOS GERAIS
+       ========================================== */
+    html {
+      scroll-behavior: smooth;
     }
 
     body {
-      font-family: Arial, Helvetica, sans-serif;
+      font-family: 'Inter', sans-serif;
       background: var(--bg);
       color: var(--text);
+      min-height: 100vh;
       line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      transition: background 0.3s, color 0.3s;
     }
 
-    .container {
-      width: min(1200px, calc(100% - 32px));
-      margin: 32px auto;
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ==========================================
+       NAVEGAÇÃO (NAV)
+       ========================================== */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: var(--nav-h);
+      background: var(--bg-nav);
+      backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      gap: 16px;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .nav-mark {
+      width: 28px;
+      height: 28px;
+      background: var(--accent);
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-mark svg {
+      width: 15px;
+      height: 15px;
+      fill: white;
+    }
+
+    .nav-brand {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -.3px;
+    }
+
+    .nav-brand span {
+      color: var(--accent-light);
+    }
+
+    /* Botão Alternador de Tema */
+    .theme-btn {
+      background: var(--surface3);
+      border: 1px solid var(--border2);
+      color: var(--text2);
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: auto;
+      transition: all 0.2s;
+    }
+
+    .theme-btn:hover {
+      background: var(--surface4);
+      color: var(--text);
+    }
+
+    .theme-btn svg {
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+    }
+
+    .nav-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 13px;
+      border: 1px solid var(--border2);
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text3);
+      background: var(--surface2);
+      transition: all .3s;
+    }
+
+    .nav-pill.active {
+      color: var(--green-text);
+      border-color: var(--green-border);
+      background: var(--green-bg);
+    }
+
+    .nav-pill.loading {
+      color: var(--amber-text);
+      border-color: var(--amber-border);
+      background: var(--amber-bg);
+    }
+
+    .nav-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .nav-pill.loading .nav-dot {
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: .2; }
+    }
+
+    /* ==========================================
+       ESTRUTURA PRINCIPAL (SHELL & HERO)
+       ========================================== */
+    .shell {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 44px 28px 100px;
     }
 
     .hero {
-      background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e293b 100%);
-      color: white;
-      border-radius: 32px;
-      padding: 32px;
-      box-shadow: 0 18px 40px rgba(2, 6, 23, 0.28);
-      display: grid;
-      grid-template-columns: 1.2fr 1fr;
-      gap: 24px;
-      align-items: end;
+      margin-bottom: 44px;
     }
 
-    .eyebrow {
-      font-size: 12px;
+    .hero-tag {
+      font-size: 11px;
+      font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.2em;
-      color: #cbd5e1;
+      letter-spacing: .14em;
+      color: var(--accent-light);
       margin-bottom: 12px;
     }
 
-    h1 {
-      font-size: clamp(32px, 5vw, 52px);
-      line-height: 1.05;
+    .hero-title {
+      font-size: 34px;
+      font-weight: 700;
+      letter-spacing: -.7px;
+      line-height: 1.12;
+      color: var(--text);
+    }
+
+    .hero-title em {
+      font-style: normal;
+      color: var(--accent-light);
+    }
+
+    .hero-desc {
+      color: var(--text3);
+      font-size: 14px;
+      margin-top: 8px;
+      max-width: 500px;
+      line-height: 1.65;
+    }
+
+    /* ==========================================
+       FORMULÁRIO DE BUSCA
+       ========================================== */
+    .search-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-xl);
+      padding: 28px;
+      margin-bottom: 36px;
+      position: relative;
+      box-shadow: var(--shadow);
+    }
+
+    .search-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: var(--r-xl);
+      background: linear-gradient(135deg, rgba(99, 102, 241, .04), transparent 60%);
+      pointer-events: none;
+    }
+
+    .search-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 40px;
+      right: 40px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(99, 102, 241, .5), transparent);
+    }
+
+    .s-lbl {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      color: var(--text4);
       margin-bottom: 12px;
     }
 
-    .hero p {
-      color: #cbd5e1;
-      max-width: 720px;
+    .s-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .s-wrap {
+      flex: 1;
+      min-width: 220px;
+      position: relative;
+    }
+
+    .s-ico {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      stroke: var(--text4);
+      fill: none;
+      stroke-width: 1.5;
+      pointer-events: none;
+      transition: stroke .2s;
+    }
+
+    .s-wrap:focus-within .s-ico {
+      stroke: var(--accent-light);
+    }
+
+    .s-in {
+      width: 100%;
+      height: 48px;
+      background: var(--surface3);
+      border: 1px solid var(--border2);
+      border-radius: var(--r);
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 15px;
+      font-weight: 500;
+      padding: 0 14px 0 42px;
+      outline: none;
+      transition: all .2s;
+      letter-spacing: .5px;
+    }
+
+    .s-in:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, .13);
+      background: var(--surface4);
+    }
+
+    .s-in::placeholder {
+      font-family: 'Inter', sans-serif;
+      color: var(--text4);
+      font-weight: 400;
+      font-size: 14px;
+      letter-spacing: 0;
+    }
+
+    .btn {
+      height: 48px;
+      border: none;
+      border-radius: var(--r);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 0 24px;
+      transition: all .18s;
+      white-space: nowrap;
+    }
+
+    .btn-p {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn-p:hover {
+      background: #5558e8;
+      box-shadow: 0 4px 20px rgba(99, 102, 241, .4);
+      transform: translateY(-1px);
+    }
+
+    .btn-p:active {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-p:disabled {
+      opacity: .4;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-g {
+      background: transparent;
+      color: var(--text2);
+      border: 1px solid var(--border2);
+    }
+
+    .btn-g:hover {
+      background: var(--surface3);
+      color: var(--text);
+      border-color: var(--border3);
+    }
+
+    .s-hint {
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--text4);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .kbd {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 4px;
+      background: var(--surface4);
+      border: 1px solid var(--border2);
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text3);
+    }
+
+    /* ==========================================
+       MENSAGENS E ALERTAS (TOASTS)
+       ========================================== */
+    .err {
+      margin-top: 12px;
+      font-size: 13px;
+      color: var(--red-text);
+      font-weight: 500;
+      display: none;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .err-ic {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      flex-shrink: 0;
+    }
+
+    .toast {
+      margin-top: 12px;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 10px 14px;
+      border-radius: var(--r);
+      display: none;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toast.ok {
+      background: var(--green-bg);
+      border: 1px solid var(--green-border);
+      color: var(--green-text);
+    }
+
+    .toast.warn {
+      background: var(--amber-bg);
+      border: 1px solid var(--amber-border);
+      color: var(--amber-text);
+    }
+
+    /* ==========================================
+       HISTÓRICO DE CONSULTAS
+       ========================================== */
+    .hist {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      display: none;
+    }
+
+    .hist-lbl {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      color: var(--text4);
+      margin-bottom: 10px;
+    }
+
+    .hist-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .chip {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 5px 13px;
+      border-radius: 999px;
+      border: 1px solid var(--border2);
+      background: var(--surface3);
+      color: var(--text3);
+      cursor: pointer;
+      transition: all .15s;
+      letter-spacing: .3px;
+    }
+
+    .chip:hover {
+      border-color: var(--accent-border);
+      background: var(--accent-bg);
+      color: var(--accent-light);
+    }
+
+    /* ==========================================
+       ESTADO VAZIO (EMPTY STATE)
+       ========================================== */
+    .empty {
+      text-align: center;
+      padding: 100px 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-xl);
+      box-shadow: var(--shadow);
+    }
+
+    .empty-g {
+      font-size: 36px;
+      margin-bottom: 14px;
+      opacity: .2;
+      filter: grayscale(1);
+    }
+
+    .empty h2 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text2);
+      margin-bottom: 6px;
+    }
+
+    .empty p {
+      font-size: 13px;
+      color: var(--text3);
+      max-width: 320px;
+      margin: 0 auto;
+      line-height: 1.65;
+    }
+
+    /* ==========================================
+       ÁREA DE RESULTADOS
+       ========================================== */
+    .result {
+      display: none;
+    }
+
+    @keyframes up {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .ani {
+      animation: up .3s ease;
+    }
+
+    /* Cabeçalho da Empresa (Banner) */
+    .banner {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-xl);
+      padding: 28px 32px;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .banner::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 60px;
+      right: 60px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(99, 102, 241, .45), transparent);
+    }
+
+    .banner::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 600px 200px at 50% -60px, rgba(99, 102, 241, .05), transparent);
+      pointer-events: none;
+    }
+
+    .ban-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 22px;
+    }
+
+    .ban-name {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -.6px;
+      color: var(--text);
+      line-height: 1.15;
+    }
+
+    .ban-fantasy {
+      font-size: 13px;
+      color: var(--text3);
+      margin-top: 4px;
+      font-weight: 400;
     }
 
     .badges {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      border-radius: 999px;
-      padding: 8px 14px;
-      font-size: 12px;
-      font-weight: 700;
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(255,255,255,0.08);
-      color: #f8fafc;
-    }
-
-    .badge.success {
-      background: rgba(16, 185, 129, 0.12);
-      color: #a7f3d0;
-      border-color: rgba(16, 185, 129, 0.3);
-    }
-
-    .badge.warning {
-      background: rgba(245, 158, 11, 0.12);
-      color: #fde68a;
-      border-color: rgba(245, 158, 11, 0.3);
-    }
-
-    .search-box {
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 28px;
-      padding: 20px;
-      backdrop-filter: blur(10px);
-    }
-
-    .label {
-      display: block;
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: #cbd5e1;
-      margin-bottom: 12px;
-      font-weight: 700;
-    }
-
-    .search-row {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    input {
-      flex: 1;
-      min-width: 260px;
-      height: 56px;
-      border-radius: 18px;
-      border: 1px solid rgba(255,255,255,0.18);
-      background: rgba(255,255,255,0.95);
-      color: var(--text);
-      padding: 0 16px;
-      font-size: 16px;
-      font-weight: 600;
-      outline: none;
-    }
-
-    input:focus {
-      border-color: #60a5fa;
-      box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.15);
-    }
-
-    .button-group {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    button {
-      min-height: 44px;
-      border: 0;
-      border-radius: 18px;
-      padding: 0 24px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .btn-primary {
-      background: var(--primary);
-      color: white;
-    }
-
-    .btn-primary:hover {
-      background: var(--primary-hover);
-    }
-
-    .btn-secondary {
-      background: rgba(255,255,255,0.14);
-      color: white;
-      border: 1px solid rgba(255,255,255,0.14);
-    }
-
-    .btn-secondary:hover {
-      background: rgba(255,255,255,0.2);
-    }
-
-    button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    .helper {
-      margin-top: 10px;
-      color: #cbd5e1;
-      font-size: 14px;
-    }
-
-    .error {
-      margin-top: 10px;
-      color: #fecdd3;
-      font-size: 14px;
-      font-weight: 700;
-    }
-
-    .toast {
-      margin-top: 10px;
-      padding: 10px 12px;
-      border-radius: 14px;
-      font-size: 14px;
-      font-weight: 700;
-    }
-
-    .toast.success {
-      background: rgba(16, 185, 129, 0.18);
-      color: #d1fae5;
-      border: 1px solid rgba(16, 185, 129, 0.3);
-    }
-
-    .toast.warning {
-      background: rgba(245, 158, 11, 0.18);
-      color: #fde68a;
-      border: 1px solid rgba(245, 158, 11, 0.3);
-    }
-
-    .report-header {
-      display: none;
-      margin-bottom: 18px;
-      padding-bottom: 18px;
-      border-bottom: 2px solid #e5e7eb;
-    }
-
-    .report-title {
-      font-size: 28px;
-      font-weight: 700;
-      color: #0f172a;
-    }
-
-    .report-meta {
-      margin-top: 8px;
-      color: #475569;
-      font-size: 14px;
-      line-height: 1.7;
-    }
-
-    .empty-state {
-      margin-top: 28px;
-      background: var(--card);
-      border: 2px dashed var(--border);
-      border-radius: var(--radius);
-      padding: 44px 24px;
-      text-align: center;
-      box-shadow: var(--shadow);
-    }
-
-    .empty-state h2 {
-      font-size: 28px;
-      margin-bottom: 10px;
-    }
-
-    .empty-state p {
-      color: var(--muted);
-      max-width: 720px;
-      margin: 0 auto;
-    }
-
-    .history-wrap {
-      margin-top: 18px;
-    }
-
-    .history-title {
-      color: #cbd5e1;
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      font-weight: 700;
-      margin-bottom: 10px;
-    }
-
-    .history-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .history-item {
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(255,255,255,0.08);
-      color: white;
-      border-radius: 999px;
-      padding: 8px 14px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      min-height: auto;
-    }
-
-    .history-item:hover {
-      background: rgba(255,255,255,0.16);
-    }
-
-    .layout {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 24px;
-      margin-top: 28px;
-    }
-
-    .stack {
-      display: grid;
-      gap: 24px;
-    }
-
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 24px;
-      box-shadow: var(--shadow);
-    }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 16px;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
-    }
-
-    .card h2 {
-      font-size: 24px;
-      margin-bottom: 4px;
-    }
-
-    .subtext {
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-    }
-
-    .grid.two {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    .info {
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 16px;
-      background: #fff;
-    }
-
-    .info-label {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: var(--muted);
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-
-    .info-value {
-      font-size: 15px;
-      font-weight: 700;
-      word-break: break-word;
-    }
-
-    .pill-row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      border-radius: 999px;
-      padding: 8px 14px;
-      font-size: 12px;
-      font-weight: 700;
-      border: 1px solid var(--border);
-      background: #f8fafc;
-      color: #334155;
-      min-height: auto;
-    }
-
-    .pill.green {
-      background: var(--success-bg);
-      border-color: #a7f3d0;
-      color: var(--success-text);
-    }
-
-    .pill.amber {
-      background: var(--warning-bg);
-      border-color: #fcd34d;
-      color: var(--warning-text);
-    }
-
-    .pill-action {
-      cursor: pointer;
-    }
-
-    .partner {
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 18px;
-      background: #fff;
+      gap: 6px;
       margin-top: 14px;
     }
 
-    .partner-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 14px;
-      flex-wrap: wrap;
+    .bdg {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      border: 1px solid;
+      letter-spacing: .02em;
     }
 
-    .partner-name {
-      font-size: 16px;
+    .bdg-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: currentColor;
+      flex-shrink: 0;
+    }
+
+    .bdg-g { background: var(--green-bg); border-color: var(--green-border); color: var(--green-text); }
+    .bdg-a { background: var(--amber-bg); border-color: var(--amber-border); color: var(--amber-text); }
+    .bdg-r { background: var(--red-bg); border-color: var(--red-border); color: var(--red-text); }
+    .bdg-i { background: var(--accent-bg); border-color: var(--accent-border); color: var(--accent-light); }
+    .bdg-n { background: var(--surface3); border-color: var(--border2); color: var(--text2); }
+
+    .ban-meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+      margin-bottom: 22px;
+    }
+
+    .bm-item {
+      padding: 14px 16px;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .bm-item:last-child {
+      border-right: none;
+    }
+
+    .bm-lbl {
+      font-size: 9px;
       font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      color: var(--text4);
+      margin-bottom: 5px;
     }
 
-    .partner-role {
-      color: var(--muted);
+    .bm-val {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .bm-val.mono {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      letter-spacing: .3px;
+    }
+
+    .bm-val.g { color: var(--green-text); }
+    .bm-val.r { color: var(--red-text); }
+    .bm-val.a { color: var(--amber-text); }
+
+    /* Botões de Ação do Banner */
+    .ban-acts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .bact {
+      height: 32px;
+      padding: 0 14px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: var(--r);
+      cursor: pointer;
+      border: 1px solid var(--border2);
+      background: var(--surface3);
+      color: var(--text3);
+      font-family: 'Inter', sans-serif;
+      transition: all .15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .bact svg {
+      width: 13px;
+      height: 13px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.5;
+    }
+
+    .bact:hover {
+      background: var(--surface4);
+      color: var(--text);
+      border-color: var(--border3);
+    }
+
+    /* Grid Principal */
+    .cgrid {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .mcol, .scol {
+      display: grid;
+      gap: 20px;
+    }
+
+    /* ==========================================
+       CARDS E CAMPOS
+       ========================================== */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-xl);
+      padding: 24px;
+      transition: border-color .2s;
+      box-shadow: var(--shadow);
+    }
+
+    .card:hover {
+      border-color: var(--border2);
+    }
+
+    .ch {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .ch-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .cicon {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--r);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .cicon svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.5;
+    }
+
+    /* Cores dos Ícones */
+    .ci-i { background: rgba(99, 102, 241, .1); color: #a5b4fc; }
+    .ci-g { background: rgba(34, 197, 94, .08); color: #86efac; }
+    .ci-a { background: rgba(245, 158, 11, .08); color: #fcd34d; }
+    .ci-b { background: rgba(59, 130, 246, .08); color: #93c5fd; }
+    .ci-p { background: rgba(168, 85, 247, .08); color: #d8b4fe; }
+    .ci-t { background: rgba(20, 184, 166, .08); color: #5eead4; }
+    .ci-r { background: rgba(239, 68, 68, .08); color: #fca5a5; }
+
+    .ctitle {
       font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -.2px;
+    }
+
+    .csub {
+      font-size: 11px;
+      color: var(--text4);
+      margin-top: 1px;
+    }
+
+    .ccnt {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 9px;
+      border-radius: 999px;
+      background: var(--surface3);
+      border: 1px solid var(--border2);
+      color: var(--text3);
+    }
+
+    .fgrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 8px;
+    }
+
+    .fgrid.col1 {
+      grid-template-columns: 1fr;
+    }
+
+    .fi {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 13px 14px;
+      transition: border-color .15s;
+    }
+
+    .fi:hover {
+      border-color: var(--border2);
+    }
+
+    .fi-l {
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .13em;
+      color: var(--text4);
+      margin-bottom: 5px;
+    }
+
+    .fi-v {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    .fi-v.mono {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      letter-spacing: .3px;
+    }
+
+    .fi-v.g { color: var(--green-text); }
+    .fi-v.r { color: var(--red-text); }
+    .fi-v.a { color: var(--amber-text); }
+
+    /* ==========================================
+       LISTAGENS ESPECÍFICAS (CNAE, SÓCIOS, REGIME)
+       ========================================== */
+    /* CNAE */
+    .cnae-p {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 14px 16px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .cnae-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--accent-light);
+      background: var(--accent-bg);
+      border: 1px solid var(--accent-border);
+      padding: 3px 9px;
+      border-radius: 6px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .cnae-txt {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .sec-h {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .13em;
+      color: var(--text4);
+      margin: 14px 0 8px;
+    }
+
+    .csec {
+      display: grid;
+      gap: 5px;
+    }
+
+    .csec-i {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 10px 14px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      transition: border-color .15s;
+    }
+
+    .csec-i:hover {
+      border-color: var(--border2);
+    }
+
+    .csec-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--text4);
+      white-space: nowrap;
+      padding-top: 1px;
+    }
+
+    .csec-desc {
+      font-size: 12px;
+      color: var(--text2);
+      line-height: 1.5;
+    }
+
+    /* Sócios */
+    .partner {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 15px 16px;
+      margin-bottom: 8px;
+      transition: border-color .15s;
+    }
+
+    .partner:last-child {
+      margin-bottom: 0;
+    }
+
+    .partner:hover {
+      border-color: var(--border2);
+    }
+
+    .p-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .p-av {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--accent-bg);
+      border: 1px solid var(--accent-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-light);
+      flex-shrink: 0;
+      letter-spacing: -.5px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .p-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -.2px;
+    }
+
+    .p-role {
+      font-size: 11px;
+      color: var(--text3);
+      margin-top: 2px;
+    }
+
+    .p-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 10px;
+    }
+
+    .ptag {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: var(--surface3);
+      border: 1px solid var(--border2);
+      color: var(--text3);
+    }
+
+    /* Regime Tributário Especial */
+    .rh {
+      border-radius: var(--r);
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 12px;
+      position: relative;
+    }
+
+    .rh.simples { background: var(--green-bg); border: 1px solid var(--green-border); }
+    .rh.mei { background: var(--amber-bg); border: 1px solid var(--amber-border); }
+    .rh.ordinario { background: var(--accent-bg); border: 1px solid var(--accent-border); }
+
+    .rh-lbl {
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      margin-bottom: 8px;
+    }
+
+    .rh.simples .rh-lbl, .rh.simples .rh-name { color: var(--green-text); }
+    .rh.mei .rh-lbl, .rh.mei .rh-name { color: var(--amber-text); }
+    .rh.ordinario .rh-lbl, .rh.ordinario .rh-name { color: var(--accent-light); }
+
+    .rh-name {
+      font-size: 19px;
+      font-weight: 700;
+      letter-spacing: -.4px;
+    }
+
+    .rh-desc {
+      font-size: 11px;
+      color: var(--text3);
+      margin-top: 5px;
+      line-height: 1.5;
+    }
+
+    /* Timeline / Cronologia */
+    .tl {
+      display: grid;
+      gap: 0;
+    }
+
+    .tl-item {
+      display: flex;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tl-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .tl-item:first-child { padding-top: 0; }
+
+    .tl-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border3);
+      flex-shrink: 0;
       margin-top: 4px;
     }
 
-    .activity-item {
-      background: #f8fafc;
-      border-radius: 18px;
-      padding: 14px;
-      font-size: 14px;
+    .tl-dot.filled { background: var(--accent); }
+
+    .tl-l {
+      font-size: 11px;
+      color: var(--text3);
+    }
+
+    .tl-v {
+      font-size: 13px;
       font-weight: 600;
-      margin-top: 12px;
-      border: 1px solid #e5e7eb;
+      color: var(--text);
+      margin-top: 2px;
     }
 
-    .hidden {
-      display: none;
-    }
-
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
-    }
-
+    /* ==========================================
+       MEDIA QUERIES (IMPRESSÃO E RESPONSIVO)
+       ========================================== */
     @media print {
-      body {
-        background: white;
-      }
-
-      .hero,
-      .history-wrap,
-      #copyBtn,
-      #pdfBtn,
-      #shareBtn,
-      #limparBtn,
-      #consultarBtn,
-      #toastBox {
-        display: none !important;
-      }
-
-      .container {
-        width: 100%;
-        margin: 0;
-        padding: 0;
-      }
-
-      .report-header {
-        display: block;
-      }
-
-      .layout {
-        grid-template-columns: 1fr;
-        gap: 16px;
-        margin-top: 0;
-      }
-
-      .stack {
-        gap: 16px;
-      }
-
-      .card,
-      .empty-state {
-        box-shadow: none;
-        border: 1px solid #d1d5db;
-        break-inside: avoid;
-        page-break-inside: avoid;
-      }
-
-      .card-header {
-        margin-bottom: 14px;
-      }
+      .nav, .search-card, .ban-acts { display: none !important; }
+      body { background: #fff; color: #000; }
+      .result { display: block !important; }
+      .card, .banner, .fi { border-color: #e5e7eb; background: #fff; }
+      .cgrid { grid-template-columns: 1fr; }
+      .fi-v, .bm-val, .ban-name { color: #111; }
+      .fi-l, .bm-lbl, .csub { color: #666; }
     }
 
-    @media (max-width: 980px) {
-      .hero,
-      .layout {
-        grid-template-columns: 1fr;
-      }
-
-      .grid,
-      .grid.two {
-        grid-template-columns: 1fr 1fr;
-      }
+    @media (max-width: 960px) {
+      .cgrid { grid-template-columns: 1fr; }
     }
 
-    @media (max-width: 640px) {
-      .container {
-        width: min(100% - 20px, 1200px);
-        margin: 10px auto 24px;
-      }
-
-      .hero,
-      .card,
-      .empty-state {
-        padding: 18px;
-        border-radius: 22px;
-      }
-
-      .grid,
-      .grid.two {
-        grid-template-columns: 1fr;
-      }
-
-      .search-row,
-      .button-group {
-        flex-direction: column;
-      }
-
-      input,
-      .button-group button {
-        width: 100%;
-      }
+    @media (max-width: 600px) {
+      .shell { padding: 24px 16px 60px; }
+      .hero-title { font-size: 26px; }
+      .s-row { flex-direction: column; }
+      .ban-top { flex-direction: column; }
+      .fgrid { grid-template-columns: 1fr 1fr; }
+      .ban-meta { grid-template-columns: 1fr 1fr; }
+      .bm-item:nth-child(2n) { border-right: none; }
     }
+
+    @media (max-width: 400px) {
+      .fgrid, .ban-meta { grid-template-columns: 1fr; }
+    }
+
+    /* Scrollbar Personalizada */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--surface4); border-radius: 99px; }
   </style>
 </head>
-<body>
-  <div class="container">
-    <section class="hero">
-      <div>
-        <div class="eyebrow">Consulta empresarial</div>
-        <h1>Consulta de CNPJ</h1>
-        <p>
-          Digite um CNPJ para buscar automaticamente os dados cadastrais, societários e tributários da empresa.
-        </p>
-        <div class="badges">
-          <span class="badge" id="statusBadge">Aguardando consulta</span>
-        </div>
-      </div>
 
-      <div class="search-box">
-        <label class="label" for="cnpjInput">Digite o CNPJ</label>
-        <div class="search-row">
-          <input id="cnpjInput" type="text" placeholder="00.000.000/0000-00" value="08.978.752/0001-33" />
-          <div class="button-group">
-            <button class="btn-primary" id="consultarBtn" type="button">Consultar</button>
-            <button class="btn-secondary" id="limparBtn" type="button">Limpar</button>
+<body class="dark-mode">
+
+  <nav class="nav">
+    <a class="nav-logo" href="#">
+      <div class="nav-mark">
+        <svg viewBox="0 0 20 20">
+          <path d="M10 1L2 6v5c0 4.418 3.358 8.558 8 9.5C14.642 19.558 18 15.418 18 11V6L10 1z" />
+        </svg>
+      </div>
+      <span class="nav-brand">MegaOnline - CNPJ<span>Pro</span></span>
+    </a>
+
+    <button class="theme-btn" id="themeToggle" title="Alternar tema">
+      <svg id="themeIcon" viewBox="0 0 24 24">
+        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10z"></path>
+      </svg>
+    </button>
+
+    <div class="nav-pill" id="statusBadge">
+      <div class="nav-dot"></div>
+      Aguardando consulta
+    </div>
+  </nav>
+
+  <div class="shell">
+
+    <div class="hero">
+      <div class="hero-tag">Receita Federal · API em tempo real</div>
+      <h1 class="hero-title">Consulta de <em>CNPJ</em></h1>
+      <p class="hero-desc">Dados cadastrais, CNAE, quadro societário e enquadramento tributário — atualizados direto da Receita Federal.</p>
+    </div>
+
+    <div class="search-card">
+      <div class="s-lbl">CNPJ da empresa</div>
+      <div class="s-row">
+        <div class="s-wrap">
+          <svg class="s-ico" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.35-4.35" />
+          </svg>
+          <input class="s-in mono" id="cnpjInput" type="text" placeholder="00.000.000/0001-00" autocomplete="off" spellcheck="false" />
+        </div>
+        <button class="btn btn-p" id="consultarBtn">Consultar</button>
+        <button class="btn btn-g" id="limparBtn">Limpar</button>
+      </div>
+      
+      <div class="s-hint">
+        Pressione <span class="kbd">↵</span> para consultar &nbsp;·&nbsp; Formato: 00.000.000/0000-00
+      </div>
+      
+      <div class="err" id="errorBox">
+        <svg class="err-ic" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M12 8v4M12 16h.01" />
+        </svg>
+        <span id="errorText"></span>
+      </div>
+      
+      <div class="toast" id="toastBox"></div>
+      
+      <div class="hist" id="historyStrip">
+        <div class="hist-lbl">Consultas recentes</div>
+        <div class="hist-row" id="historyList"></div>
+      </div>
+    </div>
+
+    <div class="empty" id="emptyState">
+      <div class="empty-g">◈</div>
+      <h2>Nenhuma empresa consultada</h2>
+      <p>Digite um CNPJ válido no campo acima para visualizar os dados completos da empresa.</p>
+    </div>
+
+    <div class="result" id="resultSection">
+
+      <div class="banner ani">
+        <div class="ban-top">
+          <div>
+            <div class="ban-name" id="banName">—</div>
+            <div class="ban-fantasy" id="banFantasy">—</div>
+            <div class="badges" id="banBadges"></div>
           </div>
         </div>
-        <div class="helper">Exemplo: 08.978.752/0001-33</div>
-        <div class="error hidden" id="errorBox"></div>
-        <div class="toast hidden" id="toastBox"></div>
-
-        <div class="history-wrap">
-          <div class="history-title">Consultas recentes</div>
-          <div class="history-list" id="historyList"></div>
+        
+        <div class="ban-meta" id="banMeta"></div>
+        
+        <div class="ban-acts">
+          <button class="bact" id="copyBtn">
+            <svg viewBox="0 0 24 24">
+              <rect x="9" y="9" width="13" height="13" rx="2" />
+              <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+            </svg>
+            Copiar CNPJ
+          </button>
+          <button class="bact" id="shareBtn">
+            <svg viewBox="0 0 24 24">
+              <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" />
+              <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" />
+            </svg>
+            Copiar link
+          </button>
+          <button class="bact" id="pdfBtn">
+            <svg viewBox="0 0 24 24">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+              <polyline points="14,2 14,8 20,8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+            </svg>
+            Exportar PDF
+          </button>
         </div>
       </div>
-    </section>
 
-    <section class="empty-state" id="emptyState">
-      <h2>Nenhuma empresa consultada ainda</h2>
-      <p>Informe um CNPJ válido no campo acima e clique em consultar para visualizar os dados da empresa.</p>
-    </section>
+      <div class="cgrid ani">
 
-    <section class="layout hidden" id="resultSection">
-      <div class="report-header" id="reportHeader">
-        <div class="report-title">Relatório de Consulta de CNPJ</div>
-        <div class="report-meta" id="reportMeta">Gerado em —</div>
-      </div>
-      <div class="stack">
-        <div class="card">
-          <div class="card-header">
-            <div>
-              <h2 id="empresaTitulo">—</h2>
-              <div class="subtext" id="empresaSubtitulo">—</div>
+        <div class="mcol">
+
+          <div class="card">
+            <div class="ch">
+              <div class="ch-left">
+                <div class="cicon ci-i">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="ctitle">Dados cadastrais</div>
+                  <div class="csub">Registro na Receita Federal</div>
+                </div>
+              </div>
             </div>
-            <div class="pill-row">
-              <button class="pill pill-action" id="copyBtn" type="button">Copiar CNPJ</button>
-              <button class="pill pill-action" id="shareBtn" type="button">Copiar link</button>
-              <button class="pill pill-action" id="pdfBtn" type="button">Exportar PDF</button>
-              <span class="pill green" id="pillSituacao">Situação: —</span>
-              <span class="pill" id="pillCnpj">CNPJ: —</span>
+            <div class="fgrid" id="dadosCadastrais"></div>
+          </div>
+
+          <div class="card">
+            <div class="ch">
+              <div class="ch-left">
+                <div class="cicon ci-t">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z" />
+                    <circle cx="12" cy="10" r="3" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="ctitle">Endereço e contato</div>
+                  <div class="csub">Localização do estabelecimento</div>
+                </div>
+              </div>
+            </div>
+            <div class="fgrid" id="enderecoContato"></div>
+          </div>
+
+          <div class="card">
+            <div class="ch">
+              <div class="ch-left">
+                <div class="cicon ci-b">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
+                    <rect x="9" y="3" width="6" height="4" rx="1" />
+                    <path d="M9 12h6M9 16h4" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="ctitle">Atividades CNAE</div>
+                  <div class="csub">Classificação Nacional de Atividades Econômicas</div>
+                </div>
+              </div>
+              <div class="ccnt" id="cnaeCount"></div>
+            </div>
+            <div class="sec-h">Atividade principal</div>
+            <div id="cnaeMain"></div>
+            <div id="cnaeSecWrap">
+              <div class="sec-h">Atividades secundárias</div>
+              <div class="csec" id="cnaeList"></div>
             </div>
           </div>
 
-          <div class="grid" id="dadosCadastrais"></div>
-        </div>
-
-        <div class="card">
-          <h2>Endereço e contato</h2>
-          <div class="subtext">Informações do estabelecimento</div>
-          <div class="grid two" id="enderecoContato" style="margin-top: 20px;"></div>
-        </div>
-
-        <div class="card">
-          <h2>Quadro societário</h2>
-          <div class="subtext">Sócios e qualificações cadastradas</div>
-          <div id="sociosList" style="margin-top: 20px;"></div>
-        </div>
-      </div>
-
-      <div class="stack">
-        <div class="card">
-          <h2>Enquadramento tributário</h2>
-          <div id="tributarioGrid" class="grid" style="grid-template-columns: 1fr; margin-top: 20px;"></div>
-        </div>
-
-        <div class="card">
-          <h2>Atividades secundárias</h2>
-          <div id="atividadesList" style="margin-top: 16px;"></div>
-        </div>
-
-        <div class="card">
-          <h2>Resumo executivo</h2>
-          <div class="subtext" style="margin-top: 12px; line-height: 1.8;">
-            A tela consulta a API em tempo real, salva o último CNPJ pesquisado, mantém um histórico recente clicável e apresenta os dados da empresa de forma organizada e profissional.
+          <div class="card">
+            <div class="ch">
+              <div class="ch-left">
+                <div class="cicon ci-p">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="ctitle">Quadro societário</div>
+                  <div class="csub">Sócios e qualificações</div>
+                </div>
+              </div>
+              <div class="ccnt" id="sociosCount"></div>
+            </div>
+            <div id="sociosList" style="margin-top:4px"></div>
           </div>
+
+        </div>
+
+        <div class="scol">
+
+          <div class="card">
+            <div class="ch">
+              <div class="ch-left">
+                <div class="cicon ci-g">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="ctitle">Regime tributário</div>
+                  <div class="csub">Enquadramento fiscal</div>
+                </div>
+              </div>
+            </div>
+            <div id="regimeSection"></div>
+          </div>
+
+          <div class="card">
+            <div class="ch">
+              <div class="ch-left">
+                <div class="cicon ci-a">
+                  <svg viewBox="0 0 24 24">
+                    <line x1="12" y1="1" x2="12" y2="23" />
+                    <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="ctitle">Capital e porte</div>
+                  <div class="csub">Informações societárias</div>
+                </div>
+              </div>
+            </div>
+            <div class="fgrid col1" id="capitalPorte" style="margin-top:4px"></div>
+          </div>
+
+          <div class="card">
+            <div class="ch">
+              <div class="ch-left">
+                <div class="cicon ci-i">
+                  <svg viewBox="0 0 24 24">
+                    <rect x="2" y="3" width="20" height="14" rx="2" />
+                    <line x1="8" y1="21" x2="16" y2="21" />
+                    <line x1="12" y1="17" x2="12" y2="21" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="ctitle">Inscrições</div>
+                  <div class="csub">Estadual e municipal</div>
+                </div>
+              </div>
+            </div>
+            <div class="fgrid col1" id="inscricoes" style="margin-top:4px"></div>
+          </div>
+
+          <div class="card">
+            <div class="ch">
+              <div class="ch-left">
+                <div class="cicon ci-r">
+                  <svg viewBox="0 0 24 24">
+                    <rect x="3" y="4" width="18" height="18" rx="2" />
+                    <line x1="16" y1="2" x2="16" y2="6" />
+                    <line x1="8" y1="2" x2="8" y2="6" />
+                    <line x1="3" y1="10" x2="21" y2="10" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="ctitle">Cronologia</div>
+                  <div class="csub">Datas relevantes</div>
+                </div>
+              </div>
+            </div>
+            <div class="tl" id="cronologia" style="margin-top:8px"></div>
+          </div>
+
         </div>
       </div>
-    </section>
+    </div>
   </div>
 
-  <textarea id="copyFallbackInput" class="sr-only" aria-hidden="true"></textarea>
+  <textarea id="cFB" style="position:absolute;left:-9999px" aria-hidden="true"></textarea>
 
   <script>
-    const LAST_CNPJ_KEY = 'ultimo_cnpj_consultado';
-    const HISTORY_KEY = 'historico_cnpj';
-    const RATE_LIMIT_WINDOW_MS = 15000;
-    const SAME_CNPJ_COOLDOWN_MS = 20000;
-    const MAX_REQUESTS_PER_WINDOW = 5;
+    /* ==========================================
+       1. LÓGICA DE TEMA (DARK / LIGHT MODE)
+       ========================================== */
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const sunIcon = `<path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10z"></path>`;
+    const moonIcon = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>`;
 
-    const IE_LENGTH_BY_UF = {
-      AC: 13,
-      AL: 9,
-      AP: 9,
-      AM: 9,
-      BA: 8,
-      CE: 9,
-      DF: 13,
-      ES: 9,
-      GO: 9,
-      MA: 9,
-      MT: 11,
-      MS: 9,
-      MG: 13,
-      PA: 9,
-      PB: 9,
-      PR: 10,
-      PE: 14,
-      PI: 9,
-      RJ: 8,
-      RN: 10,
-      RS: 10,
-      RO: 14,
-      RR: 9,
-      SC: 9,
-      SP: 12,
-      SE: 9,
-      TO: 11
+    function setTheme(isLight) {
+      if (isLight) {
+        document.body.classList.add('light-mode');
+        themeIcon.innerHTML = moonIcon;
+        localStorage.setItem('theme', 'light');
+      } else {
+        document.body.classList.remove('light-mode');
+        themeIcon.innerHTML = sunIcon;
+        localStorage.setItem('theme', 'dark');
+      }
+    }
+
+    const savedTheme = localStorage.getItem('theme');
+    const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setTheme(savedTheme === 'light' || (!savedTheme && !systemDark));
+
+    themeToggle.addEventListener('click', () => {
+      setTheme(!document.body.classList.contains('light-mode'));
+    });
+
+    /* ==========================================
+       2. VARIÁVEIS CONSTANTES E REFERÊNCIAS DOM
+       ========================================== */
+    const LK = 'cnpj_lv3', HK = 'cnpj_hv3', RW = 15000, SC = 20000, MR = 5;
+    const IEL = {
+      AC: 13, AL: 9, AP: 9, AM: 9, BA: 8, CE: 9, DF: 13, ES: 9, GO: 9,
+      MA: 9, MT: 11, MS: 9, MG: 13, PA: 9, PB: 9, PR: 10, PE: 14, PI: 9,
+      RJ: 8, RN: 10, RS: 10, RO: 14, RR: 9, SC: 9, SP: 12, SE: 9, TO: 11
     };
 
-    const cnpjInput = document.getElementById('cnpjInput');
-    const consultarBtn = document.getElementById('consultarBtn');
-    const limparBtn = document.getElementById('limparBtn');
-    const errorBox = document.getElementById('errorBox');
-    const emptyState = document.getElementById('emptyState');
-    const resultSection = document.getElementById('resultSection');
-    const statusBadge = document.getElementById('statusBadge');
-    const historyList = document.getElementById('historyList');
-    const toastBox = document.getElementById('toastBox');
-    const fallbackInput = document.getElementById('copyFallbackInput');
+    const G = id => document.getElementById(id);
+    
+    const cnpjInput = G('cnpjInput');
+    const cBtn = G('consultarBtn');
+    const lBtn = G('limparBtn');
+    const errBox = G('errorBox');
+    const errTxt = G('errorText');
+    const toastEl = G('toastBox');
+    const emptyEl = G('emptyState');
+    const resultEl = G('resultSection');
+    const statusEl = G('statusBadge');
+    const histStrip = G('historyStrip');
+    const histList = G('historyList');
+    
+    const banName = G('banName');
+    const banFantasy = G('banFantasy');
+    const banBadges = G('banBadges');
+    const banMeta = G('banMeta');
+    
+    const fDados = G('dadosCadastrais');
+    const fEnder = G('enderecoContato');
+    
+    const cnaeMain = G('cnaeMain');
+    const cnaeList = G('cnaeList');
+    const cnaeCnt = G('cnaeCount');
+    const cnaeSec = G('cnaeSecWrap');
+    
+    const socList = G('sociosList');
+    const socCnt = G('sociosCount');
+    
+    const regSec = G('regimeSection');
+    const capEl = G('capitalPorte');
+    const inscEl = G('inscricoes');
+    const cronEl = G('cronologia');
+    
+    let curCnpj = '';
+    let rHist = [];
+    let lCnpj = '';
+    let lAt = 0;
+    let cdT = null;
+    let toT = null;
 
-    const empresaTitulo = document.getElementById('empresaTitulo');
-    const empresaSubtitulo = document.getElementById('empresaSubtitulo');
-    const pillSituacao = document.getElementById('pillSituacao');
-    const pillCnpj = document.getElementById('pillCnpj');
-    const dadosCadastrais = document.getElementById('dadosCadastrais');
-    const enderecoContato = document.getElementById('enderecoContato');
-    const sociosList = document.getElementById('sociosList');
-    const tributarioGrid = document.getElementById('tributarioGrid');
-    const atividadesList = document.getElementById('atividadesList');
-    const copyBtn = document.getElementById('copyBtn');
-    const pdfBtn = document.getElementById('pdfBtn');
-    const shareBtn = document.getElementById('shareBtn');
-    const reportMeta = document.getElementById('reportMeta');
+    /* ==========================================
+       3. FUNÇÕES UTILITÁRIAS E FORMATAÇÃO
+       ========================================== */
+    const dg = v => String(v || '').replace(/\D/g, '');
 
-    let currentRenderedCnpj = '';
-    let currentCompanyName = '';
-    let requestHistory = [];
-    let lastRequestedCnpj = '';
-    let lastRequestedAt = 0;
-    let countdownTimer = null;
-    let toastTimer = null;
+    const f14 = v => {
+      const d = dg(v).slice(0, 14);
+      return d.replace(/^(\d{2})(\d)/, '$1.$2')
+              .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
+              .replace(/\.(\d{3})(\d)/, '.$1/$2')
+              .replace(/(\d{4})(\d)/, '$1-$2');
+    };
 
-    function onlyDigits(value) {
-      return String(value || '').replace(/\D/g, '');
+    const fC = v => {
+      const d = dg(v);
+      return d.length === 14 ? d.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5') : v || '—';
+    };
+
+    const fCep = v => {
+      const d = dg(v);
+      return d.length === 8 ? d.replace(/(\d{5})(\d{3})/, '$1-$2') : v || '—';
+    };
+
+    const fD = v => {
+      if (!v) return '—';
+      const d = new Date(v + 'T12:00:00');
+      return isNaN(d) ? '—' : d.toLocaleDateString('pt-BR');
+    };
+
+    const fM = v => {
+      if (v == null || v === '') return '—';
+      return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(v));
+    };
+
+    const fPh = (d, p) => {
+      if (!d || !p) return null;
+      const s = String(p).replace(/\D/g, '');
+      return s.length === 8 
+        ? `(${d}) ${s.slice(0, 4)}-${s.slice(4)}` 
+        : s.length === 9 
+          ? `(${d}) ${s.slice(0, 5)}-${s.slice(5)}` 
+          : `(${d}) ${p}`;
+    };
+
+    const fIE = (v, u) => {
+      const d = dg(v);
+      const l = IEL[String(u || '').toUpperCase()];
+      return !d ? String(v || '—') : !l ? d : d.padStart(l, '0');
+    };
+
+    const fCnae = v => {
+      if (!v) return '—';
+      const s = String(v).replace(/\D/g, '');
+      return s.length >= 5 
+        ? s.slice(0, 4) + '-' + s.slice(4, 5) + (s.length > 5 ? '/' + s.slice(5) : '') 
+        : s;
+    };
+
+    const ini = n => (n || '').split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase() || '?';
+
+    /* ==========================================
+       4. CONTROLE DE INTERFACE E ALERTAS
+       ========================================== */
+    const sErr = m => {
+      errTxt.textContent = m;
+      errBox.style.display = 'flex';
+    };
+
+    const hErr = () => {
+      errBox.style.display = 'none';
+      errTxt.textContent = '';
+    };
+
+    function sToast(m, t = 'ok') {
+      toastEl.textContent = m;
+      toastEl.className = 'toast ' + t;
+      toastEl.style.display = 'flex';
+      if (toT) clearTimeout(toT);
+      toT = setTimeout(() => toastEl.style.display = 'none', 3000);
     }
 
-    function formatCnpjInput(value) {
-      const digits = onlyDigits(value).slice(0, 14);
-      return digits
-        .replace(/^(\d{2})(\d)/, '$1.$2')
-        .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
-        .replace(/\.(\d{3})(\d)/, '.$1/$2')
-        .replace(/(\d{4})(\d)/, '$1-$2');
+    function setSt(lbl, cls = '') {
+      statusEl.innerHTML = `<div class="nav-dot"></div>${lbl}`;
+      statusEl.className = 'nav-pill' + (cls ? ' ' + cls : '');
     }
 
-    function formatCnpj(value) {
-      const digits = onlyDigits(value);
-      if (digits.length !== 14) return value || '—';
-      return digits.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+    function setLoad(v) {
+      cBtn.disabled = v;
+      cBtn.textContent = v ? 'Consultando…' : 'Consultar';
+      setSt(v ? 'Consultando…' : 'Aguardando consulta', v ? 'loading' : '');
     }
 
-    function formatCep(value) {
-      const digits = onlyDigits(value);
-      if (digits.length !== 8) return value || '—';
-      return digits.replace(/(\d{5})(\d{3})/, '$1-$2');
-    }
-
-    function formatDate(value) {
-      if (!value) return '—';
-      const date = new Date(value);
-      if (Number.isNaN(date.getTime())) return '—';
-      return date.toLocaleDateString('pt-BR');
-    }
-
-    function formatMoney(value) {
-      if (value === null || value === undefined || value === '') return '—';
-      return new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-      }).format(Number(value));
-    }
-
-    function formatPhone(ddd, phone) {
-      if (!ddd || !phone) return null;
-      const p = String(phone).replace(/\D/g, '');
-      if (p.length === 8) return `(${ddd}) ${p.slice(0, 4)}-${p.slice(4)}`;
-      if (p.length === 9) return `(${ddd}) ${p.slice(0, 5)}-${p.slice(5)}`;
-      return `(${ddd}) ${phone}`;
-    }
-
-    function formatInscricaoEstadual(value, uf) {
-      if (!value) return '—';
-      const digits = onlyDigits(value);
-      const expectedLength = IE_LENGTH_BY_UF[String(uf || '').toUpperCase()];
-
-      if (!digits) return String(value);
-      if (!expectedLength) return digits;
-
-      return digits.padStart(expectedLength, '0');
-    }
-
-    function formatDateTimeNow() {
-      return new Date().toLocaleString('pt-BR');
-    }
-
-    function updateShareUrl(cnpj) {
-      const url = new URL(window.location.href);
-      if (cnpj && cnpj.length === 14) {
-        url.searchParams.set('cnpj', cnpj);
-      } else {
-        url.searchParams.delete('cnpj');
+    function stopCd() {
+      if (cdT) {
+        clearInterval(cdT);
+        cdT = null;
       }
-      window.history.replaceState({}, '', url.toString());
-      return url.toString();
+      if (!cBtn.disabled) cBtn.textContent = 'Consultar';
     }
 
-    function createInfoItem(label, value) {
-      const div = document.createElement('div');
-      div.className = 'info';
-      div.innerHTML = `
-        <div class="info-label">${label}</div>
-        <div class="info-value">${value || '—'}</div>
-      `;
-      return div;
-    }
-
-    function showError(message) {
-      errorBox.textContent = message;
-      errorBox.classList.remove('hidden');
-    }
-
-    function hideError() {
-      errorBox.textContent = '';
-      errorBox.classList.add('hidden');
-    }
-
-    function showToast(message, tone = 'success') {
-      toastBox.textContent = message;
-      toastBox.className = `toast ${tone}`;
-      toastBox.classList.remove('hidden');
-
-      if (toastTimer) {
-        clearTimeout(toastTimer);
-      }
-
-      toastTimer = setTimeout(() => {
-        toastBox.classList.add('hidden');
-      }, 2600);
-    }
-
-    function setLoading(isLoading) {
-      consultarBtn.disabled = isLoading;
-      consultarBtn.textContent = isLoading ? 'Consultando...' : 'Consultar';
-      statusBadge.textContent = isLoading ? 'Consultando agora' : 'Aguardando consulta';
-      statusBadge.className = isLoading ? 'badge warning' : 'badge';
-    }
-
-    function stopCountdown() {
-      if (countdownTimer) {
-        clearInterval(countdownTimer);
-        countdownTimer = null;
-      }
-      if (!consultarBtn.disabled) {
-        consultarBtn.textContent = 'Consultar';
-      }
-    }
-
-    function startCountdown(waitMs, message) {
-      stopCountdown();
-      consultarBtn.disabled = true;
-
-      const updateCountdown = () => {
-        const seconds = getRemainingCooldown(waitMs);
-        consultarBtn.textContent = `Aguarde ${seconds}s`;
-        if (message) {
-          showError(`${message} Aguarde ${seconds}s.`);
-        }
-      };
-
-      updateCountdown();
-      const startedAt = Date.now();
-
-      countdownTimer = setInterval(() => {
-        const elapsed = Date.now() - startedAt;
-        const remaining = waitMs - elapsed;
-
-        if (remaining <= 0) {
-          stopCountdown();
-          consultarBtn.disabled = false;
-          consultarBtn.textContent = 'Consultar';
-          hideError();
+    function startCd(ms, msg) {
+      stopCd();
+      cBtn.disabled = true;
+      const t0 = Date.now();
+      const tick = () => {
+        const r = ms - (Date.now() - t0);
+        if (r <= 0) {
+          stopCd();
+          cBtn.disabled = false;
+          hErr();
           return;
         }
-
-        const seconds = getRemainingCooldown(remaining);
-        consultarBtn.textContent = `Aguarde ${seconds}s`;
-        if (message) {
-          showError(`${message} Aguarde ${seconds}s.`);
-        }
-      }, 250);
+        const s = Math.max(1, Math.ceil(r / 1000));
+        cBtn.textContent = `${s}s`;
+        if (msg) sErr(`${msg} Aguarde ${s}s.`);
+      };
+      tick();
+      cdT = setInterval(tick, 300);
     }
 
-    function getRemainingCooldown(ms) {
-      return Math.max(1, Math.ceil(ms / 1000));
+    /* ==========================================
+       5. VALIDAÇÕES E LOCAL STORAGE
+       ========================================== */
+    function canR(c) {
+      const n = Date.now();
+      rHist = rHist.filter(t => n - t < RW);
+      if (rHist.length >= MR) return { ok: false, ms: RW - (n - rHist[0]), msg: 'Muitas consultas em pouco tempo.' };
+      if (lCnpj === c && n - lAt < SC) return { ok: false, ms: SC - (n - lAt), msg: 'Este CNPJ foi consultado recentemente.' };
+      return { ok: true };
     }
 
-    function canMakeRequest(cnpj) {
-      const now = Date.now();
-      requestHistory = requestHistory.filter((time) => now - time < RATE_LIMIT_WINDOW_MS);
-
-      if (requestHistory.length >= MAX_REQUESTS_PER_WINDOW) {
-        const waitMs = RATE_LIMIT_WINDOW_MS - (now - requestHistory[0]);
-        return {
-          allowed: false,
-          reason: 'window_limit',
-          waitMs,
-          message: 'Muitas consultas em pouco tempo.'
-        };
-      }
-
-      if (lastRequestedCnpj === cnpj && now - lastRequestedAt < SAME_CNPJ_COOLDOWN_MS) {
-        const waitMs = SAME_CNPJ_COOLDOWN_MS - (now - lastRequestedAt);
-        return {
-          allowed: false,
-          reason: 'same_cnpj_cooldown',
-          waitMs,
-          message: 'Este CNPJ foi consultado há pouco tempo.'
-        };
-      }
-
-      return { allowed: true, reason: '', waitMs: 0, message: '' };
+    function regR(c) {
+      rHist.push(Date.now());
+      lCnpj = c;
+      lAt = Date.now();
     }
 
-    function registerRequest(cnpj) {
-      const now = Date.now();
-      requestHistory.push(now);
-      lastRequestedCnpj = cnpj;
-      lastRequestedAt = now;
-    }
+    const savL = c => { try { localStorage.setItem(LK, dg(c)); } catch(e){} };
+    const loadL = () => { try { return localStorage.getItem(LK) || ''; } catch(e){ return ''; } };
+    const clrL = () => { try { localStorage.removeItem(LK); } catch(e){} };
 
-    function saveLastCnpj(cnpj) {
+    function savH(c) {
       try {
-        localStorage.setItem(LAST_CNPJ_KEY, onlyDigits(cnpj));
-      } catch (error) {
-        console.warn('Nao foi possivel salvar o ultimo CNPJ pesquisado.', error);
-      }
+        const cl = dg(c);
+        let h = JSON.parse(localStorage.getItem(HK) || '[]');
+        h = [cl, ...h.filter(x => x !== cl)].slice(0, 7);
+        localStorage.setItem(HK, JSON.stringify(h));
+      } catch(e) {}
     }
 
-    function loadLastCnpj() {
+    const getH = () => {
       try {
-        return localStorage.getItem(LAST_CNPJ_KEY) || '';
-      } catch (error) {
-        console.warn('Nao foi possivel carregar o ultimo CNPJ pesquisado.', error);
-        return '';
-      }
-    }
-
-    function saveHistory(cnpj) {
-      try {
-        const clean = onlyDigits(cnpj);
-        let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-        history = [clean, ...history.filter((item) => item !== clean)].slice(0, 5);
-        localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
-      } catch (error) {
-        console.warn('Nao foi possivel salvar o historico.', error);
-      }
-    }
-
-    function getHistory() {
-      try {
-        return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-      } catch (error) {
-        console.warn('Nao foi possivel carregar o historico.', error);
+        return JSON.parse(localStorage.getItem(HK) || '[]');
+      } catch(e) {
         return [];
       }
-    }
+    };
 
-    function clearStoredData() {
-      try {
-        localStorage.removeItem(LAST_CNPJ_KEY);
-      } catch (error) {
-        console.warn('Nao foi possivel limpar o ultimo CNPJ.', error);
-      }
-    }
-
-    function renderHistory() {
-      const history = getHistory();
-      historyList.innerHTML = '';
-
-      if (!history.length) {
-        const empty = document.createElement('div');
-        empty.className = 'subtext';
-        empty.style.color = '#cbd5e1';
-        empty.textContent = 'Nenhuma consulta recente.';
-        historyList.appendChild(empty);
+    function renderHist() {
+      const h = getH();
+      if (!h.length) {
+        histStrip.style.display = 'none';
         return;
       }
-
-      history.forEach((item) => {
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = 'history-item';
-        button.textContent = formatCnpj(item);
-        button.addEventListener('click', () => {
-          cnpjInput.value = formatCnpjInput(item);
-          consultarCnpj();
-        });
-        historyList.appendChild(button);
+      histStrip.style.display = 'block';
+      histList.innerHTML = '';
+      h.forEach(i => {
+        const b = document.createElement('button');
+        b.className = 'chip';
+        b.textContent = fC(i);
+        b.onclick = () => {
+          cnpjInput.value = f14(i);
+          consultar();
+        };
+        histList.appendChild(b);
       });
     }
 
+    function vCnpj(c) {
+      const d = dg(c);
+      if (d.length !== 14 || /^(\d)\1+$/.test(d)) return false;
+      const calc = (s, t) => {
+        let sum = 0, pos = s - 7;
+        for (let i = s; i >= 1; i--) {
+          sum += d.charAt(s - i) * pos--;
+          if (pos < 2) pos = 9;
+        }
+        const r = sum % 11 < 2 ? 0 : 11 - (sum % 11);
+        return r === Number(d.charAt(t));
+      };
+      return calc(12, 12) && calc(13, 13);
+    }
+
+    function regime(data) {
+      const s = data.simples || {};
+      const mei = s.mei === 'Sim' || s.mei === true;
+      const sn = s.simples === 'Sim' || s.simples === true;
+      if (mei) return { cls: 'mei', name: 'MEI', desc: 'Microempreendedor Individual', opt: fD(s.data_opcao_simples), excl: fD(s.data_exclusao_simples) };
+      if (sn) return { cls: 'simples', name: 'Simples Nacional', desc: 'Enquadrado no Simples Nacional', opt: fD(s.data_opcao_simples), excl: fD(s.data_exclusao_simples) };
+      return { cls: 'ordinario', name: 'Regime Ordinário', desc: 'Lucro Presumido ou Lucro Real', opt: '—', excl: '—' };
+    }
+
+    function scls(s) {
+      const u = (s || '').toUpperCase();
+      return u === 'ATIVA' ? 'g' : /INAPTA|CANCELADA|BAIXADA/.test(u) ? 'r' : 'a';
+    }
+
+    function sbdg(s) {
+      const c = scls(s);
+      return c === 'g' ? 'bdg-g' : c === 'r' ? 'bdg-r' : 'bdg-a';
+    }
+
+    function fi(lbl, val, cls = '', mono = false) {
+      const d = document.createElement('div');
+      d.className = 'fi';
+      d.innerHTML = `<div class="fi-l">${lbl}</div><div class="fi-v${mono ? ' mono' : ''}${cls ? ' ' + cls : ''}">${val || '—'}</div>`;
+      return d;
+    }
+
+    /* ==========================================
+       6. RENDERIZAÇÃO DE DADOS (DOM)
+       ========================================== */
     function renderData(data) {
       const est = data.estabelecimento || {};
-      const uf = est.estado && est.estado.sigla;
-      const telefones = [
-        formatPhone(est.ddd1, est.telefone1),
-        formatPhone(est.ddd2, est.telefone2)
-      ].filter(Boolean).join(' • ');
+      const uf = est.estado?.sigla || '';
+      curCnpj = dg(est.cnpj || cnpjInput.value);
 
-      const endereco = `${est.tipo_logradouro || ''} ${est.logradouro || ''}, ${est.numero || 'S/N'} - ${est.bairro || '—'}`.trim();
-      const cidadeUf = `${(est.cidade && est.cidade.nome) || '—'} - ${(est.estado && est.estado.sigla) || '—'}`;
-      const inscricaoEstadual = est.inscricoes_estaduais && est.inscricoes_estaduais[0]
-        ? formatInscricaoEstadual(est.inscricoes_estaduais[0].inscricao_estadual, uf)
-        : '—';
+      banName.textContent = data.razao_social || '—';
+      banFantasy.textContent = est.nome_fantasia ? `Nome fantasia: ${est.nome_fantasia}` : 'Sem nome fantasia cadastrado';
 
-      currentRenderedCnpj = onlyDigits(est.cnpj || cnpjInput.value);
-      currentCompanyName = data.razao_social || '';
-      empresaTitulo.textContent = data.razao_social || '—';
-      empresaSubtitulo.textContent = est.nome_fantasia || 'Sem nome fantasia';
-      pillSituacao.textContent = `Situação: ${est.situacao_cadastral || '—'}`;
-      pillCnpj.textContent = `CNPJ: ${formatCnpj(est.cnpj)}`;
-      reportMeta.textContent = `Empresa: ${data.razao_social || '—'} | CNPJ: ${formatCnpj(est.cnpj)} | Gerado em: ${formatDateTimeNow()}`;
-      updateShareUrl(currentRenderedCnpj);
+      // Badges (Banner Top)
+      banBadges.innerHTML = '';
+      const sit = est.situacao_cadastral || '';
+      const reg = regime(data);
+      [
+        [sit, sbdg(sit)],
+        [fC(est.cnpj), 'bdg-i'],
+        [reg.name, reg.cls === 'simples' ? 'bdg-g' : reg.cls === 'mei' ? 'bdg-a' : 'bdg-i']
+      ].forEach(([t, c]) => {
+        const b = document.createElement('span');
+        b.className = 'bdg ' + c;
+        b.innerHTML = `<span class="bdg-dot"></span>${t}`;
+        banBadges.appendChild(b);
+      });
 
-      dadosCadastrais.innerHTML = '';
-      dadosCadastrais.appendChild(createInfoItem('Razão social', data.razao_social));
-      dadosCadastrais.appendChild(createInfoItem('Nome fantasia', est.nome_fantasia || '—'));
-      dadosCadastrais.appendChild(createInfoItem('Natureza jurídica', data.natureza_juridica && data.natureza_juridica.descricao));
-      dadosCadastrais.appendChild(createInfoItem('Porte', data.porte && data.porte.descricao));
-      dadosCadastrais.appendChild(createInfoItem('Capital social', formatMoney(data.capital_social)));
-      dadosCadastrais.appendChild(createInfoItem('Abertura', formatDate(est.data_inicio_atividade)));
-      dadosCadastrais.appendChild(createInfoItem('Data da situação', formatDate(est.data_situacao_cadastral)));
-      dadosCadastrais.appendChild(createInfoItem('Atividade principal', est.atividade_principal && est.atividade_principal.descricao));
-      dadosCadastrais.appendChild(createInfoItem('Atualizado em', formatDate(data.atualizado_em)));
+      // Metadados do Banner
+      banMeta.innerHTML = '';
+      [
+        { l: 'CNPJ', v: fC(est.cnpj), mono: true },
+        { l: 'Situação', v: sit, cls: scls(sit) },
+        { l: 'Abertura', v: fD(est.data_inicio_atividade) },
+        { l: 'Porte', v: data.porte?.descricao || '—' },
+        { l: 'Regime', v: reg.name },
+        { l: 'Capital social', v: fM(data.capital_social) }
+      ].forEach(({ l, v, cls, mono }) => {
+        const d = document.createElement('div');
+        d.className = 'bm-item';
+        d.innerHTML = `<div class="bm-lbl">${l}</div><div class="bm-val${mono ? ' mono' : ''}${cls ? ' ' + cls : ''}">${v || '—'}</div>`;
+        banMeta.appendChild(d);
+      });
 
-      enderecoContato.innerHTML = '';
-      enderecoContato.appendChild(createInfoItem('Endereço', endereco));
-      enderecoContato.appendChild(createInfoItem('Cidade / UF', cidadeUf));
-      enderecoContato.appendChild(createInfoItem('CEP', formatCep(est.cep)));
-      enderecoContato.appendChild(createInfoItem('Telefones', telefones || '—'));
-      enderecoContato.appendChild(createInfoItem('Tipo de unidade', est.tipo || '—'));
-      enderecoContato.appendChild(createInfoItem('Inscrição estadual', inscricaoEstadual));
+      // Dados Cadastrais
+      fDados.innerHTML = '';
+      [
+        { l: 'Razão social', v: data.razao_social },
+        { l: 'Nome fantasia', v: est.nome_fantasia },
+        { l: 'Natureza jurídica', v: data.natureza_juridica?.descricao },
+        { l: 'Tipo de unidade', v: est.tipo },
+        { l: 'Atualizado em', v: fD(data.atualizado_em) }
+      ].forEach(({ l, v }) => fDados.appendChild(fi(l, v)));
 
-      sociosList.innerHTML = '';
-      if (Array.isArray(data.socios) && data.socios.length) {
-        data.socios.forEach((socio) => {
-          const div = document.createElement('div');
-          div.className = 'partner';
-          div.innerHTML = `
-            <div class="partner-top">
+      // Endereço
+      fEnder.innerHTML = '';
+      const logr = [est.tipo_logradouro, est.logradouro].filter(Boolean).join(' ') || '—';
+      const tels = [fPh(est.ddd1, est.telefone1), fPh(est.ddd2, est.telefone2)].filter(Boolean);
+      [
+        { l: 'Logradouro', v: `${logr}, ${est.numero || 'S/N'}` },
+        { l: 'Bairro', v: est.bairro },
+        { l: 'Município', v: est.cidade?.nome },
+        { l: 'UF', v: uf },
+        { l: 'CEP', v: fCep(est.cep), mono: true },
+        { l: 'Telefone', v: tels.join(' · ') || '—' },
+        { l: 'E-mail', v: est.email }
+      ].filter(x => x.v).forEach(({ l, v, mono }) => fEnder.appendChild(fi(l, v, '', mono)));
+
+      // Atividades (CNAE)
+      const ap = est.atividade_principal;
+      cnaeMain.innerHTML = '';
+      if (ap) {
+        const d = document.createElement('div');
+        d.className = 'cnae-p';
+        d.innerHTML = `<div class="cnae-badge">${fCnae(ap.id || ap.subclasse)}</div><div class="cnae-txt">${ap.descricao || ap.texto || '—'}</div>`;
+        cnaeMain.appendChild(d);
+      }
+
+      const atSec = est.atividades_secundarias || [];
+      cnaeCnt.textContent = `${1 + atSec.length} atividade${(1 + atSec.length) > 1 ? 's' : ''}`;
+      cnaeList.innerHTML = '';
+      if (atSec.length) {
+        cnaeSec.style.display = '';
+        atSec.forEach(a => {
+          const d = document.createElement('div');
+          d.className = 'csec-i';
+          d.innerHTML = `<div class="csec-code">${fCnae(a.id || a.subclasse)}</div><div class="csec-desc">${a.descricao || a.texto || '—'}</div>`;
+          cnaeList.appendChild(d);
+        });
+      } else {
+        cnaeSec.style.display = 'none';
+      }
+
+      // Sócios
+      socList.innerHTML = '';
+      const socios = data.socios || [];
+      socCnt.textContent = `${socios.length} sócio${socios.length !== 1 ? 's' : ''}`;
+      if (socios.length) {
+        socios.forEach(s => {
+          const d = document.createElement('div');
+          d.className = 'partner';
+          d.innerHTML = `
+            <div class="p-row">
+              <div class="p-av">${ini(s.nome)}</div>
               <div>
-                <div class="partner-name">${socio.nome || '—'}</div>
-                <div class="partner-role">${(socio.qualificacao_socio && socio.qualificacao_socio.descricao) || '—'}</div>
-              </div>
-              <div class="pill-row">
-                <span class="pill amber">Entrada: ${formatDate(socio.data_entrada)}</span>
-                <span class="pill">${socio.faixa_etaria || 'Faixa etária não informada'}</span>
+                <div class="p-name">${s.nome || '—'}</div>
+                <div class="p-role">${s.qualificacao_socio?.descricao || 'Qualificação não informada'}</div>
               </div>
             </div>
-          `;
-          sociosList.appendChild(div);
+            <div class="p-tags">
+              <span class="ptag">Entrada: ${fD(s.data_entrada)}</span>
+              ${s.faixa_etaria ? `<span class="ptag">${s.faixa_etaria}</span>` : ''}
+            </div>`;
+          socList.appendChild(d);
         });
       } else {
-        sociosList.innerHTML = '<div class="activity-item">Nenhum sócio retornado pela API.</div>';
+        socList.innerHTML = '<div style="font-size:13px;color:var(--text4);padding:4px 0">Nenhum sócio retornado.</div>';
       }
 
-      tributarioGrid.innerHTML = '';
-      tributarioGrid.appendChild(createInfoItem('Simples Nacional', data.simples && data.simples.simples));
-      tributarioGrid.appendChild(createInfoItem('MEI', data.simples && data.simples.mei));
-      tributarioGrid.appendChild(createInfoItem('Opção pelo Simples', formatDate(data.simples && data.simples.data_opcao_simples)));
-      tributarioGrid.appendChild(createInfoItem('Exclusão do Simples', formatDate(data.simples && data.simples.data_exclusao_simples)));
+      // Regime Tributário Especial
+      regSec.innerHTML = '';
+      const rh = document.createElement('div');
+      rh.className = `rh ${reg.cls}`;
+      rh.innerHTML = `<div class="rh-lbl">Regime de tributação</div><div class="rh-name">${reg.name}</div><div class="rh-desc">${reg.desc}</div>`;
+      regSec.appendChild(rh);
+      
+      const rf = document.createElement('div');
+      rf.className = 'fgrid col1';
+      rf.style.marginTop = '10px';
+      if (reg.opt !== '—') rf.appendChild(fi('Opção pelo Simples', reg.opt));
+      if (reg.excl !== '—') rf.appendChild(fi('Exclusão do Simples', reg.excl));
+      if (rf.children.length) regSec.appendChild(rf);
 
-      atividadesList.innerHTML = '';
-      if (Array.isArray(est.atividades_secundarias) && est.atividades_secundarias.length) {
-        est.atividades_secundarias.forEach((atividade) => {
-          const div = document.createElement('div');
-          div.className = 'activity-item';
-          div.textContent = atividade.descricao || '—';
-          atividadesList.appendChild(div);
-        });
-      } else {
-        atividadesList.innerHTML = '<div class="activity-item">Nenhuma atividade secundária encontrada.</div>';
-      }
+      // Capital e Porte
+      capEl.innerHTML = '';
+      capEl.appendChild(fi('Capital social', fM(data.capital_social)));
+      capEl.appendChild(fi('Porte', data.porte?.descricao));
+      if (data.natureza_juridica?.descricao) capEl.appendChild(fi('Natureza jurídica', data.natureza_juridica.descricao));
 
-      emptyState.classList.add('hidden');
-      resultSection.classList.remove('hidden');
-      statusBadge.textContent = 'Dados carregados';
-      statusBadge.className = 'badge success';
+      // Inscrições Estaduais
+      inscEl.innerHTML = '';
+      const ie = est.inscricoes_estaduais?.[0];
+      inscEl.appendChild(fi('Insc. estadual', ie ? fIE(ie.inscricao_estadual, uf) : '—', '', true));
+      inscEl.appendChild(fi('Estado', uf || '—'));
+      if (ie?.ativo !== undefined) inscEl.appendChild(fi('Status IE', ie.ativo ? 'Ativa' : 'Inativa', '', false));
+
+      // Cronologia
+      cronEl.innerHTML = '';
+      [
+        { l: 'Abertura da empresa', v: fD(est.data_inicio_atividade), f: true },
+        { l: 'Data da situação cadastral', v: fD(est.data_situacao_cadastral), f: !!(est.data_situacao_cadastral) },
+        { l: 'Última atualização', v: fD(data.atualizado_em), f: false }
+      ].forEach(({ l, v, f }) => {
+        const d = document.createElement('div');
+        d.className = 'tl-item';
+        d.innerHTML = `<div class="tl-dot${f ? ' filled' : ''}"></div><div><div class="tl-l">${l}</div><div class="tl-v">${v}</div></div>`;
+        cronEl.appendChild(d);
+      });
+
+      // Show Results
+      emptyEl.style.display = 'none';
+      resultEl.style.display = 'block';
+      setSt('Dados carregados', 'active');
+      updateUrl(curCnpj);
     }
 
-    async function consultarCnpj() {
-      const cnpj = onlyDigits(cnpjInput.value);
-
-      if (cnpj.length !== 14) {
-        showError('Digite um CNPJ válido com 14 números.');
-        resultSection.classList.add('hidden');
-        emptyState.classList.remove('hidden');
+    /* ==========================================
+       7. LÓGICA PRINCIPAL (CONSULTA E EVENTOS)
+       ========================================== */
+    async function consultar() {
+      const cnpj = dg(cnpjInput.value);
+      hErr();
+      
+      if (!vCnpj(cnpj)) {
+        sErr('CNPJ inválido. Verifique os dígitos e tente novamente.');
         return;
       }
-
-      const rateLimitCheck = canMakeRequest(cnpj);
-      if (!rateLimitCheck.allowed) {
-        startCountdown(rateLimitCheck.waitMs, rateLimitCheck.message);
-        showToast(`${rateLimitCheck.message} Aguarde ${getRemainingCooldown(rateLimitCheck.waitMs)}s.`, 'warning');
+      
+      const chk = canR(cnpj);
+      if (!chk.ok) {
+        startCd(chk.ms, chk.msg);
+        sToast(chk.msg, 'warn');
         return;
       }
-
-      stopCountdown();
-      hideError();
-      setLoading(true);
-      registerRequest(cnpj);
-
+      
+      stopCd();
+      setLoad(true);
+      regR(cnpj);
+      
       try {
-        const response = await fetch(`https://publica.cnpj.ws/cnpj/${cnpj}`);
-
-        if (!response.ok) {
-          if (response.status === 429) {
-            startCountdown(15000, 'Limite de consultas atingido na API.');
-            throw new Error('Limite de consultas atingido na API. Aguarde alguns instantes antes de tentar novamente.');
+        const r = await fetch(`https://publica.cnpj.ws/cnpj/${cnpj}`);
+        if (!r.ok) {
+          if (r.status === 404) throw new Error('CNPJ não encontrado na Receita Federal.');
+          if (r.status === 429) {
+            startCd(20000, 'Limite da API atingido.');
+            throw new Error('Muitas requisições. Aguarde 20s.');
           }
-
-          throw new Error('Não foi possível consultar este CNPJ.');
+          throw new Error(`Erro na API (HTTP ${r.status}).`);
         }
-
-        const data = await response.json();
-        renderData(data);
-        saveLastCnpj(cnpj);
-        saveHistory(cnpj);
-        renderHistory();
-      } catch (error) {
-        resultSection.classList.add('hidden');
-        emptyState.classList.remove('hidden');
-        showError(error.message || 'Erro ao consultar o CNPJ.');
-        showToast(error.message || 'Erro ao consultar o CNPJ.', 'warning');
-        statusBadge.textContent = 'Falha na consulta';
-        statusBadge.className = 'badge warning';
+        
+        const d = await r.json();
+        renderData(d);
+        savL(cnpj);
+        savH(cnpj);
+        renderHist();
+        sToast('Consulta realizada com sucesso!', 'ok');
+        
+      } catch (e) {
+        sErr(e.message);
+        setSt('Erro na consulta', '');
       } finally {
-        setLoading(false);
+        setLoad(false);
       }
     }
 
-    function limparConsulta() {
-      stopCountdown();
-      updateShareUrl('');
+    function limpar() {
+      stopCd();
       cnpjInput.value = '';
-      currentRenderedCnpj = '';
-      hideError();
-      clearStoredData();
-      resultSection.classList.add('hidden');
-      emptyState.classList.remove('hidden');
-      statusBadge.textContent = 'Aguardando consulta';
-      statusBadge.className = 'badge';
+      curCnpj = '';
+      hErr();
+      clrL();
+      resultEl.style.display = 'none';
+      emptyEl.style.display = '';
+      setSt('Aguardando consulta', '');
+      updateUrl('');
       cnpjInput.focus();
     }
 
-    function copyUsingExecCommand(text) {
-      fallbackInput.value = text;
-      fallbackInput.classList.remove('sr-only');
-      fallbackInput.select();
-      fallbackInput.setSelectionRange(0, fallbackInput.value.length);
-
-      let copied = false;
-      try {
-        copied = document.execCommand('copy');
-      } catch (error) {
-        copied = false;
-      }
-
-      fallbackInput.blur();
-      fallbackInput.classList.add('sr-only');
-      window.getSelection()?.removeAllRanges();
-      return copied;
+    function updateUrl(c) {
+      const u = new URL(location.href);
+      c?.length === 14 ? u.searchParams.set('cnpj', c) : u.searchParams.delete('cnpj');
+      history.replaceState({}, '', u);
     }
 
-    async function copyText(text) {
-      if (!text) return false;
-
-      if (window.isSecureContext && navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+    async function cpTxt(t) {
+      if (!t) return false;
+      if (window.isSecureContext && navigator.clipboard) {
         try {
-          await navigator.clipboard.writeText(text);
+          await navigator.clipboard.writeText(t);
           return true;
-        } catch (error) {
-          console.warn('Clipboard API indisponivel, tentando fallback.', error);
-        }
+        } catch(e) {}
       }
-
-      return copyUsingExecCommand(text);
+      const fa = G('cFB');
+      fa.value = t;
+      fa.style.left = '0';
+      fa.select();
+      let ok = false;
+      try {
+        ok = document.execCommand('copy');
+      } catch(e) {}
+      fa.style.left = '-9999px';
+      window.getSelection()?.removeAllRanges();
+      return ok;
     }
 
-    function runLocalTests() {
-      console.assert(formatCnpj('11222333000181') === '11.222.333/0001-81', 'Teste formatCnpj falhou');
-      console.assert(formatCnpjInput('11222333000181') === '11.222.333/0001-81', 'Teste formatCnpjInput falhou');
-      console.assert(formatCep('79005300') === '79005-300', 'Teste formatCep falhou');
-      console.assert(formatInscricaoEstadual('283399988', 'MS') === '283399988', 'Teste IE MS falhou');
-      console.assert(formatInscricaoEstadual('12345', 'SP') === '000000012345', 'Teste IE SP com zeros falhou');
-      console.assert(onlyDigits('89.787.520/0013-3') === '8978752000133', 'Teste onlyDigits falhou');
-      requestHistory = [Date.now() - 1000, Date.now() - 2000, Date.now() - 3000, Date.now() - 4000, Date.now() - 5000];
-      const rateLimitResult = canMakeRequest('11222333000181');
-      console.assert(rateLimitResult.allowed === false, 'Teste rate limit falhou');
-      console.assert(rateLimitResult.waitMs > 0, 'Teste waitMs rate limit falhou');
-      requestHistory = [];
-      lastRequestedCnpj = '11222333000181';
-      lastRequestedAt = Date.now();
-      const cooldownResult = canMakeRequest('11222333000181');
-      console.assert(cooldownResult.allowed === false, 'Teste cooldown por CNPJ falhou');
-      console.assert(cooldownResult.waitMs > 0, 'Teste waitMs cooldown falhou');
-      lastRequestedCnpj = '';
-      lastRequestedAt = 0;
-      const testUrl = new URL('https://marcosdemori.github.io/?foo=1');
-      testUrl.searchParams.set('cnpj', '11222333000181');
-      console.assert(testUrl.searchParams.get('cnpj') === '11222333000181', 'Teste link compartilhavel falhou');
-    }
-
-    cnpjInput.addEventListener('input', function () {
-      this.value = formatCnpjInput(this.value);
+    // Event Listeners
+    cnpjInput.addEventListener('input', function() {
+      this.value = f14(this.value);
     });
 
-    cnpjInput.addEventListener('keydown', function (event) {
-      if (event.key === 'Enter') {
-        consultarCnpj();
-      }
+    cnpjInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') consultar();
     });
 
-    consultarBtn.addEventListener('click', consultarCnpj);
-    limparBtn.addEventListener('click', limparConsulta);
+    cBtn.addEventListener('click', consultar);
+    lBtn.addEventListener('click', limpar);
 
-    copyBtn.addEventListener('click', async () => {
-      const cnpj = currentRenderedCnpj || onlyDigits(cnpjInput.value);
-      if (cnpj.length !== 14) {
-        showToast('Consulte um CNPJ válido antes de copiar.', 'warning');
+    G('copyBtn').addEventListener('click', async () => {
+      const c = curCnpj || dg(cnpjInput.value);
+      if (c.length !== 14) {
+        sToast('Consulte um CNPJ primeiro.', 'warn');
         return;
       }
-
-      const copied = await copyText(formatCnpj(cnpj));
-      if (copied) {
-        showToast('CNPJ copiado com sucesso.', 'success');
-      } else {
-        showToast('Nao foi possivel copiar automaticamente neste ambiente.', 'warning');
-      }
+      (await cpTxt(fC(c))) ? sToast('CNPJ copiado!', 'ok') : sToast('Não foi possível copiar.', 'warn');
     });
 
-    shareBtn.addEventListener('click', async () => {
-      const cnpj = currentRenderedCnpj || onlyDigits(cnpjInput.value);
-      if (cnpj.length !== 14) {
-        showToast('Consulte um CNPJ válido antes de gerar o link.', 'warning');
+    G('shareBtn').addEventListener('click', async () => {
+      const c = curCnpj || dg(cnpjInput.value);
+      if (c.length !== 14) {
+        sToast('Consulte um CNPJ primeiro.', 'warn');
         return;
       }
-
-      const shareUrl = updateShareUrl(cnpj);
-      const copied = await copyText(shareUrl);
-      if (copied) {
-        showToast('Link compartilhável copiado com sucesso.', 'success');
-      } else {
-        showToast('Nao foi possivel copiar o link automaticamente.', 'warning');
-      }
+      updateUrl(c);
+      (await cpTxt(location.href)) ? sToast('Link copiado!', 'ok') : sToast('Não foi possível copiar.', 'warn');
     });
 
-    pdfBtn.addEventListener('click', () => {
-      window.print();
-    });
+    G('pdfBtn').addEventListener('click', () => window.print());
 
+    // Inicialização da Página
     window.addEventListener('load', () => {
-      runLocalTests();
-      renderHistory();
-
-      const urlCnpj = onlyDigits(new URLSearchParams(window.location.search).get('cnpj') || '');
-      const lastCnpj = loadLastCnpj();
-      const initialCnpj = urlCnpj.length === 14 ? urlCnpj : lastCnpj;
-
-      if (initialCnpj && onlyDigits(initialCnpj).length === 14) {
-        cnpjInput.value = formatCnpjInput(initialCnpj);
-        consultarCnpj();
-      } else {
-        updateShareUrl('');
+      renderHist();
+      const uc = dg(new URLSearchParams(location.search).get('cnpj') || '');
+      const lc = loadL();
+      const ini2 = uc.length === 14 ? uc : lc;
+      if (ini2 && dg(ini2).length === 14) {
+        cnpjInput.value = f14(ini2);
+        consultar();
       }
     });
   </script>
