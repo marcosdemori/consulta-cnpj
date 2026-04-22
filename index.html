@@ -686,6 +686,18 @@
       border-right: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
     }
+    
+    /* Efeito de Cópia para Itens do Banner */
+    .bm-item.copyable {
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .bm-item.copyable:hover {
+      background: var(--accent-bg);
+    }
+    .bm-item.copyable:active {
+      background: var(--accent-border);
+    }
 
     .bm-item:last-child {
       border-right: none;
@@ -861,11 +873,23 @@
       border: 1px solid var(--border);
       border-radius: var(--r);
       padding: 13px 14px;
-      transition: border-color .15s;
+      transition: all .15s;
     }
 
     .fi:hover {
       border-color: var(--border2);
+    }
+
+    /* Efeito de Cópia para Campos (.fi) */
+    .fi.copyable {
+      cursor: pointer;
+    }
+    .fi.copyable:hover {
+      border-color: var(--accent);
+      background: var(--accent-bg);
+    }
+    .fi.copyable:active {
+      transform: scale(0.98);
     }
 
     .fi-l {
@@ -1127,13 +1151,128 @@
        MEDIA QUERIES (IMPRESSÃO E RESPONSIVO)
        ========================================== */
     @media print {
-      .nav, .search-card, .ban-acts { display: none !important; }
-      body { background: #fff; color: #000; }
+      @page { margin: 1.5cm; } /* Define margens de papel A4 */
+
+      body {
+        background: #fff !important;
+        color: #000 !important;
+        font-size: 10pt !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      /* Oculta elementos desnecessários na impressão */
+      .nav, .search-card, .ban-acts, .theme-btn, .s-hint, .err, .toast, .hist, .empty, .cicon, .p-av { 
+        display: none !important; 
+      }
+
+      .shell {
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+      }
+
+      .hero {
+        text-align: center;
+        margin-bottom: 15px !important;
+        padding-bottom: 10px !important;
+        border-bottom: 2px solid #eee;
+      }
+      .hero-desc { display: none !important; }
+
       .result { display: block !important; }
-      .card, .banner, .fi { border-color: #e5e7eb; background: #fff; }
-      .cgrid { grid-template-columns: 1fr; }
-      .fi-v, .bm-val, .ban-name { color: #111; }
-      .fi-l, .bm-lbl, .csub { color: #666; }
+
+      /* Banner formatado para papel */
+      .banner {
+        border: 1px solid #ccc !important;
+        padding: 15px !important;
+        margin-bottom: 15px !important;
+        box-shadow: none !important;
+        background: #fff !important;
+        border-radius: 4px !important;
+      }
+      .banner::before, .banner::after { display: none !important; }
+      .ban-top { margin-bottom: 10px !important; }
+      .ban-name { font-size: 18pt !important; color: #000 !important; }
+      .ban-fantasy { font-size: 12pt !important; color: #444 !important; }
+
+      .ban-meta {
+        grid-template-columns: repeat(3, 1fr) !important;
+        border: 1px solid #ccc !important;
+        margin-bottom: 0 !important;
+      }
+      .bm-item { border-color: #ccc !important; padding: 6px 10px !important; pointer-events: none !important; }
+      .bm-item.copyable:hover { background: transparent !important; }
+
+      /* Transforma as colunas empilhadas para economizar folhas verticais */
+      .cgrid { display: block !important; }
+      .mcol, .scol { display: block !important; gap: 0 !important; }
+
+      .card {
+        border: 1px solid #ccc !important;
+        box-shadow: none !important;
+        padding: 15px !important;
+        margin-bottom: 15px !important;
+        border-radius: 4px !important;
+        page-break-inside: avoid !important; /* Evita cortar o card no meio da folha */
+        break-inside: avoid !important;
+        background: #fff !important;
+      }
+
+      .ch { margin-bottom: 10px !important; border-bottom: 1px solid #eee !important; padding-bottom: 5px !important; }
+      .ctitle { font-size: 14pt !important; color: #000 !important; }
+      .csub { font-size: 10pt !important; color: #666 !important; }
+
+      /* Transforma os campos em linhas limpas */
+      .fgrid {
+        grid-template-columns: repeat(3, 1fr) !important; /* 3 colunas para economia de espaço */
+        gap: 10px !important;
+      }
+      .fgrid.col1 { grid-template-columns: 1fr 1fr !important; }
+      #enderecoContato.fgrid { grid-template-columns: 1fr 1fr !important; }
+
+      .fi {
+        background: transparent !important;
+        border: none !important;
+        border-bottom: 1px dotted #ccc !important; /* Linha pontilhada estilo formulário */
+        border-radius: 0 !important;
+        padding: 4px 0 !important;
+        pointer-events: none !important;
+      }
+      .fi-l, .bm-lbl { font-size: 8pt !important; color: #555 !important; }
+      .fi-v, .bm-val { font-size: 11pt !important; color: #000 !important; }
+
+      /* Tags e Badges simples e sem fundo colorido */
+      .bdg, .cnae-badge, .ptag, .ccnt {
+        border: 1px solid #999 !important;
+        background: transparent !important;
+        color: #000 !important;
+        font-weight: normal !important;
+      }
+
+      /* Listas limpas */
+      .cnae-p, .csec-i, .partner {
+        background: transparent !important;
+        border: none !important;
+        border-bottom: 1px solid #eee !important;
+        border-radius: 0 !important;
+        padding: 6px 0 !important;
+        margin: 0 !important;
+      }
+      .cnae-p:last-child, .csec-i:last-child, .partner:last-child { border-bottom: none !important; }
+      
+      .rh {
+        border: 1px solid #ccc !important;
+        background: transparent !important;
+        padding: 10px !important;
+        margin-bottom: 5px !important;
+      }
+      .rh-name, .rh-lbl, .rh-desc { color: #000 !important; }
+
+      .tl-item { border-bottom: 1px dotted #ccc !important; padding: 5px 0 !important; }
+      .tl-dot { background: #999 !important; }
+      .tl-dot.filled { background: #000 !important; }
+      .tl-v { color: #000 !important; }
     }
 
     @media (max-width: 960px) {
@@ -1247,13 +1386,6 @@
         <div class="ban-meta" id="banMeta"></div>
         
         <div class="ban-acts">
-          <button class="bact" id="copyBtn">
-            <svg viewBox="0 0 24 24">
-              <rect x="9" y="9" width="13" height="13" rx="2" />
-              <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
-            </svg>
-            Copiar CNPJ
-          </button>
           <button class="bact" id="shareBtn">
             <svg viewBox="0 0 24 24">
               <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" />
@@ -1644,6 +1776,25 @@
       cdT = setInterval(tick, 300);
     }
 
+    async function cpTxt(t) {
+      if (!t) return false;
+      if (window.isSecureContext && navigator.clipboard) {
+        try {
+          await navigator.clipboard.writeText(t);
+          return true;
+        } catch(e) {}
+      }
+      const fa = G('cFB');
+      fa.value = t;
+      fa.style.left = '0';
+      fa.select();
+      let ok = false;
+      try { ok = document.execCommand('copy'); } catch(e) {}
+      fa.style.left = '-9999px';
+      window.getSelection()?.removeAllRanges();
+      return ok;
+    }
+
     /* ==========================================
        5. VALIDAÇÕES E LOCAL STORAGE
        ========================================== */
@@ -1675,10 +1826,10 @@
     }
 
     const getH = () => {
-      try {
-        return JSON.parse(localStorage.getItem(HK) || '[]');
-      } catch(e) {
-        return [];
+      try { 
+        return JSON.parse(localStorage.getItem(HK) || '[]'); 
+      } catch(e) { 
+        return []; 
       }
     };
 
@@ -1736,10 +1887,21 @@
       return c === 'g' ? 'bdg-g' : c === 'r' ? 'bdg-r' : 'bdg-a';
     }
 
-    function fi(lbl, val, cls = '', mono = false) {
+    function fi(lbl, val, cls = '', mono = false, copyable = false) {
       const d = document.createElement('div');
-      d.className = 'fi';
+      
+      // Se não for '—' e nem 'ISENTO', ativamos a cópia
+      const isCop = copyable && val && val !== '—' && val !== 'ISENTO';
+      
+      d.className = 'fi' + (isCop ? ' copyable' : '');
+      d.title = isCop ? 'Clique para copiar' : '';
       d.innerHTML = `<div class="fi-l">${lbl}</div><div class="fi-v${mono ? ' mono' : ''}${cls ? ' ' + cls : ''}">${val || '—'}</div>`;
+      
+      if (isCop) {
+        d.addEventListener('click', async () => {
+          if (await cpTxt(val)) sToast(lbl + ' copiado!', 'ok');
+        });
+      }
       return d;
     }
 
@@ -1769,45 +1931,52 @@
         banBadges.appendChild(b);
       });
 
-      // Metadados do Banner
+      // Metadados do Banner 
       banMeta.innerHTML = '';
       [
-        { l: 'CNPJ', v: fC(est.cnpj), mono: true },
+        { l: 'CNPJ', v: fC(est.cnpj), mono: true, copyVal: dg(est.cnpj) },
         { l: 'Situação', v: sit, cls: scls(sit) },
         { l: 'Abertura', v: fD(est.data_inicio_atividade) },
         { l: 'Porte', v: data.porte?.descricao || '—' },
         { l: 'Regime', v: reg.name },
         { l: 'Capital social', v: fM(data.capital_social) }
-      ].forEach(({ l, v, cls, mono }) => {
+      ].forEach(({ l, v, cls, mono, copyVal }) => {
         const d = document.createElement('div');
-        d.className = 'bm-item';
+        d.className = 'bm-item' + (copyVal ? ' copyable' : '');
+        d.title = copyVal ? 'Clique para copiar' : '';
         d.innerHTML = `<div class="bm-lbl">${l}</div><div class="bm-val${mono ? ' mono' : ''}${cls ? ' ' + cls : ''}">${v || '—'}</div>`;
+        
+        if (copyVal) {
+          d.addEventListener('click', async () => {
+            if (await cpTxt(copyVal)) sToast(l + ' copiado!', 'ok');
+          });
+        }
         banMeta.appendChild(d);
       });
 
       // Dados Cadastrais
       fDados.innerHTML = '';
       [
-        { l: 'Razão social', v: data.razao_social },
-        { l: 'Nome fantasia', v: est.nome_fantasia },
-        { l: 'Natureza jurídica', v: data.natureza_juridica?.descricao },
-        { l: 'Tipo de unidade', v: est.tipo },
-        { l: 'Atualizado em', v: fD(data.atualizado_em) }
-      ].forEach(({ l, v }) => fDados.appendChild(fi(l, v)));
+        { l: 'Razão social', v: data.razao_social, copy: true },
+        { l: 'Nome fantasia', v: est.nome_fantasia, copy: true },
+        { l: 'Natureza jurídica', v: data.natureza_juridica?.descricao, copy: false },
+        { l: 'Tipo de unidade', v: est.tipo, copy: false },
+        { l: 'Atualizado em', v: fD(data.atualizado_em), copy: false }
+      ].forEach(({ l, v, copy }) => fDados.appendChild(fi(l, v, '', false, copy)));
 
-      // Endereço
+      // Endereço e Contato
       fEnder.innerHTML = '';
       const logr = [est.tipo_logradouro, est.logradouro].filter(Boolean).join(' ') || '—';
       const tels = [fPh(est.ddd1, est.telefone1), fPh(est.ddd2, est.telefone2)].filter(Boolean);
       [
-        { l: 'Logradouro', v: `${logr}, ${est.numero || 'S/N'}` },
-        { l: 'Bairro', v: est.bairro },
-        { l: 'Município', v: est.cidade?.nome },
-        { l: 'UF', v: uf },
-        { l: 'CEP', v: fCep(est.cep), mono: true },
-        { l: 'Telefone', v: tels.join(' · ') || '—' },
-        { l: 'E-mail', v: est.email }
-      ].filter(x => x.v).forEach(({ l, v, mono }) => fEnder.appendChild(fi(l, v, '', mono)));
+        { l: 'Logradouro', v: `${logr}, ${est.numero || 'S/N'}`, copy: true },
+        { l: 'Bairro', v: est.bairro, copy: true },
+        { l: 'Município', v: est.cidade?.nome, copy: true },
+        { l: 'UF', v: uf, copy: false },
+        { l: 'CEP', v: fCep(est.cep), mono: true, copy: true },
+        { l: 'Telefone', v: tels.join(' · ') || '—', copy: true },
+        { l: 'E-mail', v: est.email, copy: true }
+      ].filter(x => x.v).forEach(({ l, v, mono, copy }) => fEnder.appendChild(fi(l, v, '', mono, copy)));
 
       // Atividades (CNAE)
       const ap = est.atividade_principal;
@@ -1880,12 +2049,17 @@
       capEl.appendChild(fi('Porte', data.porte?.descricao));
       if (data.natureza_juridica?.descricao) capEl.appendChild(fi('Natureza jurídica', data.natureza_juridica.descricao));
 
-      // Inscrições Estaduais
+      // Inscrições Estaduais (Mostra ISENTO e desativa cópia se não houver IE)
       inscEl.innerHTML = '';
       const ie = est.inscricoes_estaduais?.[0];
-      inscEl.appendChild(fi('Insc. estadual', ie ? fIE(ie.inscricao_estadual, uf) : '—', '', true));
+      const hasIE = !!(ie && ie.inscricao_estadual);
+      
+      inscEl.appendChild(fi('Insc. estadual', hasIE ? fIE(ie.inscricao_estadual, uf) : 'ISENTO', '', true, hasIE));
       inscEl.appendChild(fi('Estado', uf || '—'));
-      if (ie?.ativo !== undefined) inscEl.appendChild(fi('Status IE', ie.ativo ? 'Ativa' : 'Inativa', '', false));
+      
+      if (ie?.ativo !== undefined) {
+        inscEl.appendChild(fi('Status IE', ie.ativo ? 'Ativa' : 'Inativa', '', false));
+      }
 
       // Cronologia
       cronEl.innerHTML = '';
@@ -1975,27 +2149,6 @@
       history.replaceState({}, '', u);
     }
 
-    async function cpTxt(t) {
-      if (!t) return false;
-      if (window.isSecureContext && navigator.clipboard) {
-        try {
-          await navigator.clipboard.writeText(t);
-          return true;
-        } catch(e) {}
-      }
-      const fa = G('cFB');
-      fa.value = t;
-      fa.style.left = '0';
-      fa.select();
-      let ok = false;
-      try {
-        ok = document.execCommand('copy');
-      } catch(e) {}
-      fa.style.left = '-9999px';
-      window.getSelection()?.removeAllRanges();
-      return ok;
-    }
-
     // Event Listeners
     cnpjInput.addEventListener('input', function() {
       this.value = f14(this.value);
@@ -2007,15 +2160,6 @@
 
     cBtn.addEventListener('click', consultar);
     lBtn.addEventListener('click', limpar);
-
-    G('copyBtn').addEventListener('click', async () => {
-      const c = curCnpj || dg(cnpjInput.value);
-      if (c.length !== 14) {
-        sToast('Consulte um CNPJ primeiro.', 'warn');
-        return;
-      }
-      (await cpTxt(fC(c))) ? sToast('CNPJ copiado!', 'ok') : sToast('Não foi possível copiar.', 'warn');
-    });
 
     G('shareBtn').addEventListener('click', async () => {
       const c = curCnpj || dg(cnpjInput.value);
