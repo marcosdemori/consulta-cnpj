@@ -1,61 +1,151 @@
-# MegaOnline - Consulta de CNPJ
+# 🚀 MegaOnline - Consulta de CNPJ
 
-Aplicação simples e profissional para consulta de CNPJ utilizando a API pública:
+Aplicação web moderna para consulta de CNPJ com interface estilo SaaS, análise empresarial e visualização avançada de dados.
 
-👉 https://publica.cnpj.ws
+👉 API utilizada: https://publica.cnpj.ws  
+👉 Acesse online: https://marcosdemori.github.io/consulta-cnpj/
 
-A página permite digitar um CNPJ e visualizar automaticamente os dados cadastrais da empresa, incluindo:
+---
 
+## 🧠 Visão Geral
+
+O projeto evoluiu de uma simples consulta para um **dashboard completo de empresas**, inspirado em plataformas profissionais como CNPJA.
+
+Agora você não apenas consulta um CNPJ — você **analisa a empresa**.
+
+---
+
+## 🔍 Funcionalidades
+
+### 📊 Consulta de Empresas
+- Consulta em tempo real via API pública
+- Visualização completa dos dados cadastrais
+- Interface estilo dashboard profissional
+
+Inclui:
 - Razão social
 - Nome fantasia
 - Situação cadastral
-- Atividade principal
-- Endereço
-- Telefones
+- Endereço completo
+- Telefones e e-mail
+- CNAE (principal e secundários)
+- Inscrições estaduais
+
+---
+
+### 🧾 Regime Tributário Inteligente
+- Identificação automática de:
+  - MEI
+  - Simples Nacional
+  - Lucro Real / Presumido
+
+Exibe:
+- ✔ Regime atual
+- 📅 Data de entrada no regime
+- 🔁 Histórico (entrada / exclusão)
+
+Tratamento robusto da API (aceita `true`, `"Sim"`, `"S"`, etc).
+
+---
+
+### 🧠 Score Empresarial (tipo Serasa)
+Sistema de pontuação de **0 a 1000**, baseado em:
+
+- Situação cadastral
+- Tempo de atividade
+- Capital social
+- Regime tributário
 - Sócios
-- Enquadramento tributário
-- Inscrição estadual (com ajuste automático por UF)
+- Inscrição estadual
+- Contato (telefone/email)
 
-## Acesse online
-🔗 https://marcosdemori.github.io/consulta-cnpj/
+Exibe:
+- Nota da empresa
+- Classificação (Muito bom / Bom / Regular / Atenção)
+- Motivos da pontuação
 
-## 🚀 Tecnologias
+---
 
-Projeto feito com:
+### 👥 Pesquisa de Sócios
+- Busca entre empresas consultadas
+- Filtro por nome
+- Visualização consolidada
 
-- HTML puro
-- CSS puro
-- JavaScript (Vanilla JS)
+---
 
-## ✨ Funcionalidades
+### 📦 Consulta em Massa
+- Input de múltiplos CNPJs
+- Consulta sequencial automática
+- Tabela de resultados
+- Exportação CSV
 
-- 🔍 Consulta em tempo real via API
-- ⌨️ Máscara automática de CNPJ
-- ⚡ Busca ao pressionar ENTER
-- 💾 Salva o último CNPJ pesquisado (localStorage)
-- 📊 Layout profissional e responsivo
-- 🧾 Inscrição estadual ajustada automaticamente por estado (zeros à esquerda)
+---
 
-## ⚠️ Observações
+### ⚡ UX e Funcionalidades Extras
+- ⌨️ Busca com ENTER
+- 📋 Clique para copiar dados
+- 💾 Histórico de consultas (localStorage)
+- 🌙 Dark / Light mode
+- 📱 Layout responsivo
+- 🔄 Feedback visual de carregamento
 
-- A API utilizada é pública e pode ter limitações de uso
-- Caso não funcione, pode ser bloqueio de CORS do navegador
+---
 
-## 📌 Exemplo de uso
+## 🖥️ Tecnologias
 
-Digite um CNPJ válido, por exemplo:
+- HTML5
+- CSS3 (Custom Properties)
+- JavaScript (Vanilla)
+- API pública: https://publica.cnpj.ws
 
-```
-08.978.752/0001-33
-```
+---
 
-Clique em **Consultar** e os dados serão exibidos automaticamente.
+## 📦 Como usar
+
+1. Baixe o arquivo:
+
+2. Abra no navegador:
+
+3. Digite um CNPJ válido e clique em **Consultar**
+
+---
+
+## 🌐 Deploy
+
+Pode ser hospedado facilmente em:
+
+- GitHub Pages
+- Vercel
+- Netlify
+- Cloudflare Pages
+
+---
+
+## ⚠️ Limitações
+
+- API pública pode ter rate limit (HTTP 429)
+- Score empresarial é estimado (não oficial)
+- Dependência de disponibilidade da Receita Federal
+
+---
+
+## 🔮 Próximas melhorias
+
+- [ ] Sistema de login
+- [ ] Backend próprio (cache + proxy API)
+- [ ] Planos pagos (SaaS)
+- [ ] Exportação Excel avançada
+- [ ] Dashboard de prospecção
+- [ ] Score mais avançado (machine learning)
+
+---
 
 ## 👨‍💻 Autor
 
-Projeto desenvolvido por Marcos De Mori Laiola.
+Desenvolvido por **Marcos De Mori Laiola**
+
+---
 
 ## 📄 Licença
 
 Uso livre para projetos pessoais e comerciais.
-
