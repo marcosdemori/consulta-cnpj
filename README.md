@@ -1,9 +1,9 @@
-# 🚀 MegaOnline - Consulta de CNPJ
+# 🚀 MegaOnline - Consultar CNPJ
 
 Aplicação web moderna para consulta de CNPJ com interface estilo SaaS, análise empresarial e visualização avançada de dados.
 
 👉 API utilizada: https://publica.cnpj.ws  
-👉 Acesse online: https://marcosdemori.github.io/consulta-cnpj/
+👉 Acesse online: https://marcosdemori.github.io/consultar-cnpj/
 
 ---
 
