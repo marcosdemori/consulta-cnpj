@@ -1,151 +1,46 @@
-# 🚀 MegaOnline - Consultar CNPJ
+# 🚀 MegaOnline - CNPJ Pro (v2.0)
 
-Aplicação web moderna para consulta de CNPJ com interface estilo SaaS, análise empresarial e visualização avançada de dados.
+Aplicação web moderna para consulta de CNPJ com interface estilo SaaS, resiliência de dados e visualização avançada.
 
-👉 API utilizada: https://publica.cnpj.ws  
-👉 Acesse online: https://marcosdemori.github.io/consultar-cnpj/
+👉 Acesse online: [https://marcosdemori.github.io/consultar-cnpj/](https://marcosdemori.github.io/consultar-cnpj/)
 
 ---
 
 ## 🧠 Visão Geral
 
-O projeto evoluiu de uma simples consulta para um **dashboard completo de empresas**, inspirado em plataformas profissionais como CNPJA.
+O MegaOnline evoluiu para um **dashboard empresarial resiliente**. O grande diferencial desta versão é a **Camada de Abstração Dual-API**, que garante que a ferramenta continue funcionando mesmo que a API principal atinja limites de requisição ou apresente instabilidade.
 
-Agora você não apenas consulta um CNPJ — você **analisa a empresa**.
+## 🛠️ Novidades da Versão 2.0
 
----
+### 🔄 Resiliência Dual-API (Hybrid Fetch)
+- **API Primária:** [cnpj.ws](https://publica.cnpj.ws) para dados detalhados e Inscrições Estaduais nativas.
+- **API de Fallback:** [CNPJá Open](https://open.cnpja.com) acionada automaticamente em caso de erros ou limites (Rate Limit 429)[cite: 1].
+- **Normalização Inteligente:** Os dados de ambas as fontes são unificados em um formato padrão para o dashboard.
 
-## 🔍 Funcionalidades
+### 📦 Consulta em Massa Avançada
+- **Interface Otimizada:** Nova tabela em grid que suporta até 50 CNPJs por lote sem quebras de layout[cite: 1].
+- **Exibição de IE:** Agora a Inscrição Estadual é exibida diretamente na listagem em massa[cite: 1].
+- **Status Visual:** Indicadores de sucesso/erro limpos (sem nomes técnicos de APIs), mantendo o foco no resultado.
 
-### 📊 Consulta de Empresas
-- Consulta em tempo real via API pública
-- Visualização completa dos dados cadastrais
-- Interface estilo dashboard profissional
+## 🔍 Funcionalidades Principais
 
-Inclui:
-- Razão social
-- Nome fantasia
-- Situação cadastral
-- Endereço completo
-- Telefones e e-mail
-- CNAE (principal e secundários)
-- Inscrições estaduais
-
----
-
-### 🧾 Regime Tributário Inteligente
-- Identificação automática de:
-  - MEI
-  - Simples Nacional
-  - Lucro Real / Presumido
-
-Exibe:
-- ✔ Regime atual
-- 📅 Data de entrada no regime
-- 🔁 Histórico (entrada / exclusão)
-
-Tratamento robusto da API (aceita `true`, `"Sim"`, `"S"`, etc).
-
----
-
-### 🧠 Score Empresarial (tipo Serasa)
-Sistema de pontuação de **0 a 1000**, baseado em:
-
-- Situação cadastral
-- Tempo de atividade
-- Capital social
-- Regime tributário
-- Sócios
-- Inscrição estadual
-- Contato (telefone/email)
-
-Exibe:
-- Nota da empresa
-- Classificação (Muito bom / Bom / Regular / Atenção)
-- Motivos da pontuação
-
----
-
-### 👥 Pesquisa de Sócios
-- Busca entre empresas consultadas
-- Filtro por nome
-- Visualização consolidada
-
----
-
-### 📦 Consulta em Massa
-- Input de múltiplos CNPJs
-- Consulta sequencial automática
-- Tabela de resultados
-- Exportação CSV
-
----
-
-### ⚡ UX e Funcionalidades Extras
-- ⌨️ Busca com ENTER
-- 📋 Clique para copiar dados
-- 💾 Histórico de consultas (localStorage)
-- 🌙 Dark / Light mode
-- 📱 Layout responsivo
-- 🔄 Feedback visual de carregamento
-
----
+- **📊 Dashboard Profissional:** Visualização completa de dados cadastrais, sócios, CNAEs e cronologia.
+- **🧾 Regime Tributário:** Identificação de MEI, Simples Nacional e Regimes Ordinários com datas de opção[cite: 1].
+- **🧠 Score Empresarial:** Sistema de pontuação exclusivo baseado em múltiplos fatores de confiabilidade.
+- **💾 Histórico Local:** Armazenamento automático das últimas consultas no navegador (localStorage).
+- **📋 Copy-to-Clipboard:** Clique em qualquer campo (CNPJ, IE, Endereço) para copiar instantaneamente.
+- **📊 Exportação Total:** Gere relatórios em CSV das consultas em massa com todos os campos unificados[cite: 1].
 
 ## 🖥️ Tecnologias
 
-- HTML5
-- CSS3 (Custom Properties)
-- JavaScript (Vanilla)
-- API pública: https://publica.cnpj.ws
-
----
-
-## 📦 Como usar
-
-1. Baixe o arquivo:
-
-2. Abra no navegador:
-
-3. Digite um CNPJ válido e clique em **Consultar**
-
----
+- **Frontend:** HTML5, CSS3 (Variáveis dinâmicas), JavaScript Vanilla (Zero frameworks).
+- **Consumo de Dados:** Fetch API com tratamento de erros assíncronos e retentativa.
+- **Layout:** Flexbox e CSS Grid para total responsividade.
 
 ## 🌐 Deploy
 
-Pode ser hospedado facilmente em:
-
-- GitHub Pages
-- Vercel
-- Netlify
-- Cloudflare Pages
-
----
-
-## ⚠️ Limitações
-
-- API pública pode ter rate limit (HTTP 429)
-- Score empresarial é estimado (não oficial)
-- Dependência de disponibilidade da Receita Federal
-
----
-
-## 🔮 Próximas melhorias
-
-- [ ] Sistema de login
-- [ ] Backend próprio (cache + proxy API)
-- [ ] Planos pagos (SaaS)
-- [ ] Exportação Excel avançada
-- [ ] Dashboard de prospecção
-- [ ] Score mais avançado (machine learning)
-
----
+Hospedado via **GitHub Pages**. Para rodar localmente, basta clonar o repositório e abrir o arquivo `index.html` em qualquer navegador moderno.
 
 ## 👨‍💻 Autor
 
 Desenvolvido por **Marcos De Mori Laiola**
-
----
-
-## 📄 Licença
-
-Uso livre para projetos pessoais e comerciais.
