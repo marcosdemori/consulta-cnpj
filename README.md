@@ -1,4 +1,4 @@
-# 🚀 MegaOnline - CNPJ Pro (v2.0)
+# 🚀 MegaOnline - CNPJ Pro (v2.1)
 
 Aplicação web moderna para consulta de CNPJ com interface estilo SaaS, resiliência de dados e visualização avançada.
 
@@ -9,6 +9,13 @@ Aplicação web moderna para consulta de CNPJ com interface estilo SaaS, resili�
 ## 🧠 Visão Geral
 
 O MegaOnline evoluiu para um **dashboard empresarial resiliente**. O grande diferencial desta versão é a **Camada de Abstração Dual-API**, que garante que a ferramenta continue funcionando mesmo que a API principal atinja limites de requisição ou apresente instabilidade.
+
+
+## 🛠️ Correções da Versão 2.1
+
+- **Abertura limpa:** ao abrir a página, a aplicação não carrega mais automaticamente a última consulta salva no navegador. O histórico continua disponível, mas só consulta quando o usuário clicar em um CNPJ recente ou quando houver `?cnpj=` no link compartilhado.
+- **IE mais segura:** a Inscrição Estadual agora é escolhida priorizando a IE ativa do mesmo UF do estabelecimento, evitando exibir a primeira IE retornada pela API quando ela pertence a outro estado/CNPJ.
+- **Fallback preservado:** a CNPJá Open agora mantém todas as inscrições estaduais retornadas normalizadas, permitindo a seleção correta no dashboard, consulta em massa, CSV e cópia geral.
 
 ## 🛠️ Novidades da Versão 2.0
 

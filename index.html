@@ -744,6 +744,19 @@
     const fM = v => { if(v==null||v==='') return '—'; return new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(Number(v)); };
     const fPh = (d,p) => { if(!d||!p) return null; const s=String(p).replace(/\D/g,''); return s.length===8?`(${d}) ${s.slice(0,4)}-${s.slice(4)}`:s.length===9?`(${d}) ${s.slice(0,5)}-${s.slice(5)}`:`(${d}) ${p}`; };
     const fIE = (v,u) => { const d=dg(v); const l=IEL[String(u||'').toUpperCase()]; return !d?String(v||'—'):!l?d:d.padStart(l,'0'); };
+    const ieUF = ie => String(ie?.uf || ie?.state || ie?.estado?.sigla || '').toUpperCase();
+    function pickIE(est) {
+      const ies = Array.isArray(est?.inscricoes_estaduais) ? est.inscricoes_estaduais : [];
+      const uf = String(est?.estado?.sigla || est?.uf || '').toUpperCase();
+      if(!ies.length) return null;
+      const hasNumber = ie => !!dg(ie?.inscricao_estadual || ie?.number || '');
+      const isActive = ie => ie?.ativo === true || ie?.enabled === true || ie?.active === true || ie?.status?.text === 'Ativa';
+      return ies.find(ie => hasNumber(ie) && ieUF(ie) === uf && isActive(ie))
+          || ies.find(ie => hasNumber(ie) && ieUF(ie) === uf)
+          || ies.find(ie => hasNumber(ie) && isActive(ie))
+          || ies.find(hasNumber)
+          || null;
+    }
     const fCnae = v => { if(!v) return '—'; const s=String(v).replace(/\D/g,''); return s.length>=5?s.slice(0,4)+'-'+s.slice(4,5)+(s.length>5?'/'+s.slice(5):''):s; };
     const ini = n => (n||'').split(' ').filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase()||'?';
 
@@ -903,7 +916,7 @@
       capEl.innerHTML=''; capEl.appendChild(fi('Capital social',fM(data.capital_social))); capEl.appendChild(fi('Porte',data.porte?.descricao));
       if(data.natureza_juridica?.descricao) capEl.appendChild(fi('Natureza jurídica',data.natureza_juridica.descricao));
       inscEl.innerHTML='';
-      const ie=est.inscricoes_estaduais?.[0]; const hasIE=!!(ie&&ie.inscricao_estadual);
+      const ie=pickIE(est); const hasIE=!!(ie&&ie.inscricao_estadual);
       inscEl.appendChild(fi('Insc. estadual',hasIE?fIE(ie.inscricao_estadual,uf):'ISENTO','',true,hasIE));
       inscEl.appendChild(fi('Estado',uf||'—'));
       if(ie?.ativo!==undefined) inscEl.appendChild(fi('Status IE',ie.ativo?'Ativa':'Inativa','',false));
@@ -944,11 +957,13 @@
       const simples = d.company?.simples || {};
       const simei = d.company?.simei || {};
 
-      const ieObj = regs.length ? {
-        inscricao_estadual: regs[0].number || '',
-        ativo: regs[0].enabled !== false,
-        uf: regs[0].state || ''
-      } : null;
+      const normalizedRegs = regs
+        .filter(r => r && r.number)
+        .map(r => ({
+          inscricao_estadual: r.number || '',
+          ativo: r.enabled !== false,
+          uf: r.state || ''
+        }));
 
       return {
         _source: 'cnpja',
@@ -994,7 +1009,7 @@
             descricao: activities[0].text
           } : null,
           atividades_secundarias: secondaries.map(a => ({ id: a.id, descricao: a.text })),
-          inscricoes_estaduais: ieObj ? [ieObj] : []
+          inscricoes_estaduais: normalizedRegs
         }
       };
     }
@@ -1191,10 +1206,10 @@
         const reg = regime(data);
         const sc  = scls(sit);
         const uf = est.estado?.sigla || '';
-        const ies = est.inscricoes_estaduais || [];
+        const ie = pickIE(est);
         let ieVal = 'ISENTO';
-        if (ies.length > 0 && ies[0].inscricao_estadual) {
-            ieVal = fIE(ies[0].inscricao_estadual, uf);
+        if (ie && ie.inscricao_estadual) {
+            ieVal = fIE(ie.inscricao_estadual, uf);
         }
 
         nameEl.innerHTML   = `<span class="br-name" title="${data.razao_social||''}">${data.razao_social||'—'}</span>`;
@@ -1361,10 +1376,10 @@
         const uf = est.estado?.sigla || '';
         const ap = est.atividade_principal;
         const tel = fPh(est.ddd1, est.telefone1) || '';
-        const ies = est.inscricoes_estaduais || [];
+        const ie = pickIE(est);
         let ieVal = 'ISENTO';
-        if (ies.length > 0 && ies[0].inscricao_estadual) {
-            ieVal = fIE(ies[0].inscricao_estadual, uf);
+        if (ie && ie.inscricao_estadual) {
+            ieVal = fIE(ie.inscricao_estadual, uf);
         }
 
         rows.push([
@@ -1401,10 +1416,10 @@
         const est=data.estabelecimento||{};
         const reg=regime(data);
         const uf = est.estado?.sigla || '';
-        const ies = est.inscricoes_estaduais || [];
+        const ie = pickIE(est);
         let ieVal = 'ISENTO';
-        if (ies.length > 0 && ies[0].inscricao_estadual) {
-            ieVal = fIE(ies[0].inscricao_estadual, uf);
+        if (ie && ie.inscricao_estadual) {
+            ieVal = fIE(ie.inscricao_estadual, uf);
         }
         return `${fC(cnpj)} | ${data.razao_social||'—'} | IE: ${ieVal} | ${reg.name} | ${est.situacao_cadastral||'—'}`;
       }).join('\n');
@@ -1414,9 +1429,8 @@
     window.addEventListener('load',()=>{
       renderHist();
       const uc=dg(new URLSearchParams(location.search).get('cnpj')||'');
-      const lc=loadL();
-      const ini2=uc.length===14?uc:lc;
-      if(ini2&&dg(ini2).length===14){cnpjInput.value=f14(ini2);consultar();}
+      clrL();
+      if(uc.length===14){cnpjInput.value=f14(uc);consultar();}
     });
   </script>
 </body>
